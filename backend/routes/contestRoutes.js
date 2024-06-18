@@ -6,6 +6,7 @@ const app = express();
 app.get('/', (req, res) => {
     res.send('Hello contest');
 });
+
 app.post('/create', async (req, res) => {
     try {
         if (!req.body) {
@@ -13,7 +14,12 @@ app.post('/create', async (req, res) => {
         }
         const userAuth = await User.findOne({ userid: req.body.userid });
         if (userAuth && userAuth.isAdmin) {
-            const newContest = new Contest(req.body);
+            const newContest = new Contest({
+                title: req.body.title,
+                problems: req.body.problems,
+                start_time: req.body.start_time,
+                duration: req.body.duration
+            });
             newContest.save();
             res.send('Contest created');
         }
@@ -25,4 +31,25 @@ app.post('/create', async (req, res) => {
         console.log(err);
     }
 })
+
+app.get('/contests', async (req, res) => {
+    try {
+        const contests = await Contest.find().populate('problems');
+        res.send(contests);
+    }
+    catch (err) {
+        console.log(err);
+    }
+})
+
+app.get('/contest/:ID', async (req, res) => {
+    try {
+        const contest = await Contest.findById(req.params.ID);
+        res.send(contest);
+    }
+    catch (err) {
+        console.log(err);
+    }
+})
+
 module.exports = app;

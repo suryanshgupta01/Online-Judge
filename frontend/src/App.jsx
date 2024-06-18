@@ -1,51 +1,56 @@
 import { useState, useContext } from 'react'
 import { useUserContext } from './useCustomContext'
+import { Route, useParams, Link, RouterProvider, createBrowserRouter } from "react-router-dom";
+
 import './App.css'
-const baseURL = 'http://localhost:4000'
-function App() {
-  const { currentUser, login, signup, logout } = useUserContext()
-  const [name1, setName1] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+import Signup from './components/Signup'
+import Profile from './components/Profile'
+import Problems from './components/Problems'
+import Contests from './components/Contests'
+import Signin from './components/Signin'
+import Navbar from './components/navbar'
+import ErrorPage from './components/ErrorPage';
+import LandingPage from './components/LandingPage';
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    console.log(name1, email, password)
-    try {
-      await signup(email, password)
-    } catch (err) {
-      console.log(err)
-    }
-    if (currentUser) {
-      fetch(`${baseURL}/user/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: name1 ? name1 : currentUser.displayName,//firebase auth names
-          userid: currentUser.uid,
-          email: email
-        })
-      }).then(res => res.json()).then(data => console.log(data)).catch(err => console.log(err))
-    }
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <LandingPage />
+  }, {
+    path: '/problems',
+    element: <Problems />
+  },
+  {
+    path: '/problem',
+    element: <Problems />
+  },
+  {
+    path: '/contests',
+    element: <Contests />
+  },
+  {
+    path: "/profile/:name1",
+    element: <Profile />
+  }, 
+  {
+    path: '/signup',
+    element: <Signup />
+  },
+  {
+    path: '/signin',
+    element: <Signin />
+  },
+
+  {
+    path: "*",
+    element: <ErrorPage />
   }
-
+])
+function App() {
   return (
     <>
-      <div>
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="name1">Name</label>
-          <input type="text" id='name1' value={name1} onChange={(e) => setName1(e.target.value)} />
-          <label htmlFor="email">Email</label>
-          <input type="email" id='email' value={email} onChange={(e) => setEmail(e.target.value)} />
-          <label htmlFor="password">Password</label>
-          <input type="password" id='password' value={password} onChange={(e) => setPassword(e.target.value)} />
-          <button type='submit'>Submit</button>
-          <button onClick={() => logout()}>LOGOUT</button>
-        </form>
-      </div>
-
+      <Navbar />
+      <RouterProvider router={router} />
     </>
   )
 }

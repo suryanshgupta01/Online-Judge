@@ -30,7 +30,11 @@ const userSchema = new mongoose.Schema({
     problems_submitted: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Problem"
-    }]
+    }],
+    profile_pic:{
+        type: String,
+        default: "http://www.gravatar.com/avatar/?d=mp"
+    }
 }, {
     timestamps: true
 });

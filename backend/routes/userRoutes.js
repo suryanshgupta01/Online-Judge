@@ -21,9 +21,14 @@ app.get('/profile/:ID', async (req, res) => {
 
 app.post('/register', (req, res) => {
     try {
-        if (!req.body.userid || !req.body.email || !req.body.name) {
+        if (!req.body.userid  || !req.body.name) {
             return res.status(400).send('Information  is missing');
         }
+        const oldUser = User.find({ userid: req.body.userid })
+        if (oldUser) {
+            return res.status(400).send('User already exists');
+        }
+        console.log(req.body)
         const newUser = new User(req.body);
         newUser.save();
         res.send(newUser);

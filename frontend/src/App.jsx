@@ -8,20 +8,21 @@ import Profile from './components/Profile'
 import Problems from './components/Problems'
 import Contests from './components/Contests'
 import Signin from './components/Signin'
-import Navbar from './components/navbar'
+import Navbar from './components/Navbar'
 import ErrorPage from './components/ErrorPage';
 import LandingPage from './components/LandingPage';
+import ProblemSet from './components/ProblemSet';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <LandingPage />
   }, {
-    path: '/problems',
-    element: <Problems />
+    path: '/problemset',
+    element: <ProblemSet />
   },
   {
-    path: '/problem',
+    path: '/problem/:Pname',
     element: <Problems />
   },
   {

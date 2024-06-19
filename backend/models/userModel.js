@@ -6,9 +6,7 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     email: {
-        type: String,
-        required: true,
-        unique: true
+        type: String
     },
     userid: {
         type: String,
@@ -18,10 +16,6 @@ const userSchema = new mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false
-    },
-    problem_rating: {
-        type: Number,
-        default: 0
     },
     contest_rating: {
         type: Number,

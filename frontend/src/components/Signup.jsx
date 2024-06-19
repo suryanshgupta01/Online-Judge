@@ -1,9 +1,180 @@
-import React,{ useState, useContext } from 'react'
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import GoogleIcon from '@mui/icons-material/Google';
+import MicrosoftIcon from '@mui/icons-material/Microsoft';
+import GithubIcon from '@mui/icons-material/GitHub';
+import TwitterIcon from '@mui/icons-material/Twitter';
+const defaultTheme = createTheme();
+
+import React, { useEffect, useState, useContext } from 'react'
 import { useUserContext } from '../useCustomContext'
+import { auth } from '../firebase'
+import { GoogleAuthProvider, signInWithRedirect, GithubAuthProvider, browserPopupRedirectResolver, getRedirectResult } from 'firebase/auth'
+import { Link } from 'react-router-dom'
 const baseURL = 'http://localhost:4000'
 
 const Signup = () => {
-    return (<>signup</>)
-}
+    const { currentUser, login, signup, logout, handleGoogle, handleGithub, handleMicrosoft, handleTwitter, handleFacebook } = useUserContext()
+    const [name1, setName1] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        try {
+            await signup(email, password)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        setIsLoading(true)
+        getRedirectResult(auth).then(response => {
+            console.log(response)
+            if (!response) return
+        }).catch(error => {
+            console.error(error);
+        }).finally(() => setIsLoading(false))
+    }, []);
+
+    const handleGoogle1 = async () => {
+        const provider = new GoogleAuthProvider()
+        signInWithRedirect(auth, provider, browserPopupRedirectResolver).catch(error => {
+            console.error(error);
+        })
+    }
+    const handleGithub1 = async () => {
+        const provider = new GithubAuthProvider()
+        signInWithRedirect(auth, provider, browserPopupRedirectResolver).catch(error => {
+            console.error(error);
+        })
+    }
+
+    return (
+        <> <ThemeProvider theme={defaultTheme}>
+            <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <Box
+                    sx={{
+                        marginTop: 8,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                        <LockOutlinedIcon />
+                    </Avatar>
+                    <Typography component="h1" variant="h5">
+                        Sign up
+                    </Typography>
+                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    autoComplete="given-name"
+                                    name="firstName"
+                                    required
+                                    fullWidth
+                                    id="firstName"
+                                    label="First Name"
+                                    autoFocus
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    id="lastName"
+                                    label="Last Name"
+                                    name="lastName"
+                                    autoComplete="family-name"
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    id="email"
+                                    label="Email Address"
+                                    name="email"
+                                    autoComplete="email"
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="password"
+                                    label="Password"
+                                    type="password"
+                                    id="password"
+                                    autoComplete="new-password"
+                                />
+                            </Grid>
+
+                        </Grid>
+                        <Grid container justifyContent="flex-end">
+                            <Grid item>
+                                <a>
+                                    <Link to="/signin" variant="body2">
+                                        Already have an account? Sign in
+                                    </Link>
+                                </a>
+                            </Grid>
+                        </Grid>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            Sign Up
+                        </Button>
+                        <Grid container display='flex' justifyContent='space-around' alignItems='center'>
+                            <Button disabled={isLoading} onClick={() => handleGoogle1()} variant="contained" color="error"><GoogleIcon /></Button>
+                            <Button disabled={isLoading} onClick={() => handleMicrosoft()} variant="contained" color="success"><MicrosoftIcon /></Button>
+                            <Button disabled={isLoading} onClick={() => handleGithub1()} variant="contained" style={{ backgroundColor: 'black' }}><GithubIcon /></Button>
+                            <Button disabled={isLoading} onClick={() => handleTwitter()} variant="contained"><TwitterIcon /></Button>
+                        </Grid>
+
+                    </Box>
+                </Box>
+            </Container>
+        </ThemeProvider>
+            <div>
+                {/* 
+                <form onSubmit={handleSubmit}>
+                    <label htmlFor="name1">Name</label>
+
+                    <input type="text" id='name1' value={name1} onChange={(e) => setName1(e.target.value)} />
+                    <label htmlFor="email">Email</label>
+                    <input type="email" id='email' value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <label htmlFor="password">Password</label>
+                    <input type="password" id='password' value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <button type='submit'>Submit</button>
+                    <button disabled={isLoading} onClick={() => handleGoogle1()}>Google</button>
+                    <button disabled={isLoading} onClick={() => handleGithub1()}>Github</button>
+                    <button disabled={isLoading} onClick={() => handleMicrosoft()}>Microsoft</button>
+                    <button disabled={isLoading} onClick={() => handleTwitter()}>Twitter</button>
+                    <button disabled={isLoading} onClick={() => logout()}>LOGOUT</button>
+                </form>
+            */}
+            </div>
+
+        </>
+    )
+}
 export default Signup

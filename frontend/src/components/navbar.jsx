@@ -68,6 +68,7 @@ function Navbar() {
                             color="inherit"
                         >
                             <MenuIcon />
+                            hfdgd
                         </IconButton>
                         <Menu
                             id="menu-appbar"
@@ -124,7 +125,9 @@ function Navbar() {
                             </Button>
                         ))}
                     </Box>
-
+                    <Button variant="contained" color="error" onClick={() => {
+                        window.location.href = '/signin'
+                    }}>Logout</Button>
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

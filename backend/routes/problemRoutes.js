@@ -68,11 +68,12 @@ app.put('/update/:ID', async (req, res) => {
 app.get('/problem/:title', async (req, res) => {
     try {
         const title = req.params.title;
-        const details = await Problem.find({ 'title': title });
+        const newtitle = title.split('-').join(' ');
+        const details = await Problem.find({ 'title': newtitle });
         if (!details || details.length === 0) {
             res.status(404).send('Problem not found');
         }
-        res.send(JSON.stringify(details));
+        res.send(JSON.stringify(details[0]));
     } catch (err) {
         console.log(err);
     }

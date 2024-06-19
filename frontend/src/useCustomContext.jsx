@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { auth } from './firebase'
-import { GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { browserPopupRedirectResolver, OAuthProvider, GithubAuthProvider, GoogleAuthProvider, signInWithPopup, TwitterAuthProvider, FacebookAuthProvider } from 'firebase/auth'
+import axios from 'axios'
 
 
 const CustomContext = createContext();
@@ -9,7 +10,19 @@ const UseCustomContext = ({ children }) => {
     const [loading, setLoading] = useState(true)
 
     async function signup(email, password) {
-        return auth.createUserWithEmailAndPassword(email, password)
+        await auth.createUserWithEmailAndPassword(email, password)
+        try {
+            axios.post(`${baseURL}/user/register`, {
+                name: currentUser.displayName || 'User',
+                userid: currentUser.uid,
+                email: currentUser.email || email
+            })
+            .then(response => console.log(response))
+            .catch(error => console.log(error))
+
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     async function login(email, password) {
@@ -36,15 +49,43 @@ const UseCustomContext = ({ children }) => {
     }
     const handleGoogle = async () => {
         const provider = new GoogleAuthProvider();
-        return signInWithPopup(auth, provider)
+        return signInWithPopup(auth, provider, browserPopupRedirectResolver)
     }
     const handleGithub = async () => {
         const provider = new GithubAuthProvider();
-        return signInWithPopup(auth, provider)
+        return signInWithPopup(auth, provider, browserPopupRedirectResolver)
+    }
+    const handleMicrosoft = async () => {
+        const provider = new OAuthProvider('microsoft.com')
+        return signInWithPopup(auth, provider, browserPopupRedirectResolver)
+
+    }
+    const handleTwitter = async () => {
+        const provider = new TwitterAuthProvider()
+        return signInWithPopup(auth, provider, browserPopupRedirectResolver)
+
+    }
+    const handleFacebook = async () => {
+        const provider = new FacebookAuthProvider()
+        return signInWithPopup(auth, provider, browserPopupRedirectResolver)
+    }
+    const handleCreateUser = async (user) => {
+        const baseURL = 'http://localhost:4000'
+        if(!user)return
+        const name1 = user.displayName || 'User'
+        console.log(name1, user.uid, user.email)
+        axios.post(`${baseURL}/user/register`, {
+            name: name1,
+            userid: user.uid,
+            email: user.email
+        })
+        .then(response => console.log(response))
+        .catch(error => console.log(error))
     }
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             setCurrentUser(user)
+            handleCreateUser(user)
             console.log(user)
             setLoading(false)
         })
@@ -63,7 +104,10 @@ const UseCustomContext = ({ children }) => {
             deleteUser,
             resetPassword,
             updateEmail1,
-            updatePassword1
+            updatePassword1,
+            handleMicrosoft,
+            handleTwitter,
+            handleFacebook
         }}>
             {!loading && children}
         </CustomContext.Provider>

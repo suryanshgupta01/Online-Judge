@@ -3,17 +3,15 @@ const app = express();
 require("dotenv").config()
 const bodyParser = require('body-parser');
 const connectDB = require('./database/ConnectDB');
-const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const problemRoutes = require('./routes/problemRoutes')
 const submissionRoutes = require('./routes/submissionRoutes')
 const contestRoutes = require('./routes/contestRoutes')
 const PORT = process.env.PORT || 4000;
-
+const cors = require('cors');
+app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
-app.use(cors())
 app.use(express.json())
-app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/user', userRoutes);

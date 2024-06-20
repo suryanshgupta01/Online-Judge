@@ -28,7 +28,7 @@ app.post('/create', async (req, res) => {
         }
     }
     catch (err) {
-        console.log(err);
+        console.log("Failed to create contest");
     }
 })
 
@@ -38,7 +38,7 @@ app.get('/contests', async (req, res) => {
         res.send(contests);
     }
     catch (err) {
-        console.log(err);
+        console.log("Failed to get contests");
     }
 })
 
@@ -48,7 +48,7 @@ app.get('/contest/:ID', async (req, res) => {
         res.send(contest);
     }
     catch (err) {
-        console.log(err);
+        console.log("failed geting contest by id");
     }
 })
 

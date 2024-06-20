@@ -6,15 +6,16 @@ const baseURL = 'http://localhost:4000';
 
 const Profile = () => {
     const { name1 } = useParams();
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState({});
 
     useEffect(() => {
         axios.get(`${baseURL}/user/profile/${name1}`)
             .then(response => {
+                console.log(response)
                 if (response.msg) 
                     alert(response.msg)
                 else
-                    setUser(response.data[0]);
+                    setUser(response.data);
             })
             .catch(error => console.error('Error fetching user data:', error));
     }, [name1]);
@@ -29,7 +30,7 @@ const Profile = () => {
             <img src={user.profile_pic} alt="Profile" />
             <p>Email: {user.email}</p>
             <p>Contest Rating: {user.contest_rating}</p>
-            {/* <p>Number of Problems Submitted: {user.problems_submitted}</p> */}
+            <p>Number of Problems Submitted: {user.problems_submitted}</p>
             <p>Admin Status: {user.isAdmin ? 'Yes' : 'No'}</p>
         </div>
     );

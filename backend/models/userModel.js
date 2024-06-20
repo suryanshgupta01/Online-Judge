@@ -3,10 +3,12 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        trim: true,
+        unique: true
     },
     email: {
-        type: String
+        type: String,
     },
     userid: {
         type: String,
@@ -25,7 +27,7 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Problem"
     }],
-    profile_pic:{
+    profile_pic: {
         type: String,
         default: "http://www.gravatar.com/avatar/?d=mp"
     }

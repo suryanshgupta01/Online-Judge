@@ -16,7 +16,7 @@ import { useUserContext } from '../useCustomContext';
 import { Link } from '@mui/material';
 
 function Navbar() {
-    const { logout, currentUser } = useUserContext()
+    const { logout, currentUser, globalUser } = useUserContext()
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -34,7 +34,7 @@ function Navbar() {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
-
+    console.log(globalUser)
     return (
         <nav className="navbar bg-dark border-bottom border-body" data-bs-theme="dark" >
             <div className="container-fluid">
@@ -55,7 +55,7 @@ function Navbar() {
                             {/* <img src={currentUser.photoURL} alt="profile pic" style={{ borderRadius: '50%', height: '45px', width: '45px' }} /> */}
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }} style={{ marginRight: '3.7rem', color: 'gray', fontSize: '1rem' }}>
                                 <span style={{ marginRight: '0.5rem' }}>
-                                    {currentUser.displayName}
+                                    {globalUser ? globalUser.name : currentUser.email}
                                 </span>
                                 <Avatar alt="profile pic" src={currentUser.photoURL ? currentUser.photoURL : "/static/images/avatar/2.jpg"} />
                             </IconButton>
@@ -76,7 +76,7 @@ function Navbar() {
                                 onClose={handleCloseUserMenu}
                             >
                                 <MenuItem onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center"> <a href={`/profile/${currentUser.displayName}`}>Profile</a>  </Typography>
+                                   {globalUser ? <Typography textAlign="center"> <a href={`/profile/${globalUser.name}`}>Profile</a>  </Typography>:<></>}
                                 </MenuItem>
                                 <MenuItem onClick={handleCloseUserMenu}>
                                     <Typography textAlign="center"><Link onClick={() => logout()}> Logout</Link> </Typography>

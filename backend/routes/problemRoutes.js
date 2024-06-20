@@ -20,7 +20,7 @@ app.post('/create', async (req, res) => {
         res.send(newProb);
     }
     catch (err) {
-        console.log(err);
+        console.log("Failed to create problem");
     }
 });
 
@@ -35,7 +35,7 @@ app.delete('/delete/:ID', async (req, res) => {
         res.send('Problem deleted');
     }
     catch (err) {
-        console.log(err);
+        console.log("Failed to delete problem");
     }
 });
 
@@ -45,7 +45,7 @@ app.get('/problemset', async (req, res) => {
         const allproblems = await Problem.find({ 'hidden': false });
         res.send(JSON.stringify(allproblems));
     } catch (err) {
-        console.log(err);
+        console.log("Failed to get problemset");
         res.status(500).send('Internal Server Error');
     }
 });
@@ -60,7 +60,7 @@ app.put('/update/:ID', async (req, res) => {
         res.send('Problem updated');
     }
     catch (err) {
-        console.log(err);
+        console.log("error updating problem");
     }
 }
 );
@@ -75,7 +75,7 @@ app.get('/problem/:title', async (req, res) => {
         }
         res.send(JSON.stringify(details[0]));
     } catch (err) {
-        console.log(err);
+        console.log("error getting problem by title");
     }
 });
 module.exports = app;

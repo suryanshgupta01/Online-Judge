@@ -7,35 +7,51 @@ app.get('/', (req, res) => {
 });
 
 app.get('/profile/:ID', async (req, res) => {
+    console.log("in profile/id API")
     try {
         const id = req.params.ID;
-        const details = await User.find({ name: id });
-        if (!details || details.length === 0) {
-            res.status(404).send({ "msg": "User not found" });
+        console.log(id)
+        const details = await User.findOne({ name: id });
+        if (!details || details.length == 0) {
+            console.log("nothing found")
+            return res.status(404).send({ "msg": "User not found" });
         }
-        res.send(JSON.stringify(details));
-    } catch (err) {
-        console.log(err);
-        console.log("error msg complete")
+        console.log(details)
+        return res.send(details);
+    } catch (error) {
+        console.error('Error fetching user by name:', error);
     }
 });
+const makeusername = (email, name) => {
+    const random = Math.floor(Math.random() * 9000) + 1000;
+    if (!name)
+        return email.split('@')[0] + random.toString()
+    const names = name.split(' ')[0] + random.toString()
+    return names
+}
 
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
+    console.log("in register API")
     try {
-        if (!req.body.userid || !req.body.name) {
-            return res.status(400).send('Information  is missing');
+        const { userid, name } = req.body;
+        if (!userid || !name) {
+            return res.status(400).send('Information is missing');
         }
-        const oldUser = User.find({ userid: req.body.userid })
+
+        // Check if the user already exists
+        const oldUser = await User.findOne({ userid });
         if (oldUser) {
             return res.status(400).send('User already exists');
         }
-        console.log(req.body)
+
+        // Create a new user
         const newUser = new User(req.body);
-        newUser.save();
-        res.send(newUser);
-    }
-    catch (err) {
-        console.log(err);
+        await newUser.save();
+
+        return res.send(newUser);
+    } catch (err) {
+        console.error("Error creating user in my database:", err);
+        return res.status(500).send('Internal Server Error');
     }
 });
 module.exports = app;

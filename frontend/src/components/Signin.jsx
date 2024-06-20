@@ -55,12 +55,13 @@ const Signin = () => {
             console.error(error);
         }).finally(() => setIsLoading(false))
     }, []);
-
+   
     const handleGoogle1 = async () => {
         const provider = new GoogleAuthProvider()
-        signInWithRedirect(auth, provider, browserPopupRedirectResolver).catch(error => {
+        await signInWithRedirect(auth, provider, browserPopupRedirectResolver).catch(error => {
             console.error(error);
         })
+       
     }
     const handleGithub1 = async () => {
         const provider = new GithubAuthProvider()

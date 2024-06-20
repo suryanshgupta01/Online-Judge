@@ -17,7 +17,7 @@ app.post('/create', async (req, res) => {
             const newContest = new Contest({
                 title: req.body.title,
                 problems: req.body.problems,
-                start_time: req.body.start_time,
+                start_time: req.body.start_time,// "2019-04-28T14:45:15"
                 duration: req.body.duration
             });
             newContest.save();

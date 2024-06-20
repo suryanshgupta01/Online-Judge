@@ -11,17 +11,18 @@ app.get('/profile/:ID', async (req, res) => {
         const id = req.params.ID;
         const details = await User.find({ name: id });
         if (!details || details.length === 0) {
-            res.status(404).send('User not found');
+            res.status(404).send({ "msg": "User not found" });
         }
         res.send(JSON.stringify(details));
     } catch (err) {
         console.log(err);
+        console.log("error msg complete")
     }
 });
 
 app.post('/register', (req, res) => {
     try {
-        if (!req.body.userid  || !req.body.name) {
+        if (!req.body.userid || !req.body.name) {
             return res.status(400).send('Information  is missing');
         }
         const oldUser = User.find({ userid: req.body.userid })

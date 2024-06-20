@@ -21,33 +21,7 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-
-function createData(id, name, calories, fat, carbs, protein) {
-    return {
-        id,
-        name,
-        calories,
-        fat,
-        carbs,
-        protein,
-    };
-}
-
-const rows = [
-    createData(1, 'Cupcake', 305, 3.7, 67, 4.3),
-    createData(2, 'Donut', 452, 25.0, 51, 4.9),
-    createData(3, 'Eclair', 262, 16.0, 24, 6.0),
-    createData(4, 'Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData(5, 'Gingerbread', 356, 16.0, 49, 3.9),
-    createData(6, 'Honeycomb', 408, 3.2, 87, 6.5),
-    createData(7, 'Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData(8, 'Jelly Bean', 375, 0.0, 94, 0.0),
-    createData(9, 'KitKat', 518, 26.0, 65, 7.0),
-    createData(10, 'Lollipop', 392, 0.2, 98, 0.0),
-    createData(11, 'Marshmallow', 318, 0, 81, 2.0),
-    createData(12, 'Nougat', 360, 19.0, 9, 37.0),
-    createData(13, 'Oreo', 437, 18.0, 63, 4.0),
-];
+import { useNavigate } from 'react-router-dom';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -65,10 +39,6 @@ function getComparator(order, orderBy) {
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
 function stableSort(array, comparator) {
     const stabilizedThis = array.map((el, index) => [el, index]);
     stabilizedThis.sort((a, b) => {
@@ -83,35 +53,35 @@ function stableSort(array, comparator) {
 
 const headCells = [
     {
-        id: 'name',
+        id: 'title',
         numeric: false,
         disablePadding: true,
-        label: 'Dessert (100g serving)',
+        label: 'Questions',
     },
     {
-        id: 'calories',
+        id: 'rating',
         numeric: true,
         disablePadding: false,
-        label: 'Calories',
+        label: 'rating',
     },
     {
-        id: 'fat',
+        id: 'accuracy',
         numeric: true,
         disablePadding: false,
-        label: 'Fat (g)',
+        label: 'Accuracy',
     },
     {
-        id: 'carbs',
+        id: 'total_accepted',
         numeric: true,
         disablePadding: false,
-        label: 'Carbs (g)',
+        label: 'Total_accepted',
     },
     {
-        id: 'protein',
+        id: 'status',
         numeric: true,
         disablePadding: false,
-        label: 'Protein (g)',
-    },
+        label: 'Status',
+    }
 ];
 
 function EnhancedTableHead(props) {
@@ -133,6 +103,7 @@ function EnhancedTableHead(props) {
                         inputProps={{
                             'aria-label': 'select all desserts',
                         }}
+                        style={{ display: 'none' }}
                     />
                 </TableCell>
                 {headCells.map((headCell) => (
@@ -147,7 +118,7 @@ function EnhancedTableHead(props) {
                             direction={orderBy === headCell.id ? order : 'asc'}
                             onClick={createSortHandler(headCell.id)}
                         >
-                            {headCell.label}
+                            <strong>{headCell.label}</strong>
                             {orderBy === headCell.id ? (
                                 <Box component="span" sx={visuallyHidden}>
                                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -200,23 +171,12 @@ function EnhancedTableToolbar(props) {
                     id="tableTitle"
                     component="div"
                 >
-                    Nutrition
+                    ProblemSet
                 </Typography>
             )}
 
-            {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            ) : (
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            )}
+
+
         </Toolbar>
     );
 }
@@ -225,12 +185,15 @@ EnhancedTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
 };
 
-export default function DataTableDemo() {
+export default function DataTableDemo({ problems }) {
     const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('calories');
+    const [orderBy, setOrderBy] = React.useState('rating');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [rows, setRows] = React.useState(problems);
+    // console.log(rows)
+
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -240,30 +203,16 @@ export default function DataTableDemo() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = rows.map((n) => n.id);
+            const newSelected = rows.map((n) => n._id);
             setSelected(newSelected);
             return;
         }
         setSelected([]);
     };
 
+    const navigate = useNavigate()
     const handleClick = (event, id) => {
-        const selectedIndex = selected.indexOf(id);
-        let newSelected = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-        setSelected(newSelected);
+        navigate(`/problem/${rows[id].title.split(' ').join('-')}`);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -275,7 +224,6 @@ export default function DataTableDemo() {
         setPage(0);
     };
 
-   
     const isSelected = (id) => selected.indexOf(id) !== -1;
 
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -288,21 +236,33 @@ export default function DataTableDemo() {
                 page * rowsPerPage,
                 page * rowsPerPage + rowsPerPage,
             ),
-        [order, orderBy, page, rowsPerPage],
+        [order, orderBy, page, rowsPerPage,rows],
     );
-
+    const changeQuestions = (ques) => {
+        ques = ques.trim()
+        if (ques === '') return
+        let newrows = problems.filter(row => row.title.toLowerCase().includes(ques.toLowerCase()));
+        setRows(newrows);
+    }
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
-                <EnhancedTableToolbar numSelected={selected.length} />
+                <EnhancedTableToolbar numSelected={0} />
                 <TableContainer>
+                    <div>
+                        <input
+                            className="form-control me-2" type="search"
+                            placeholder="Search for question" aria-label="Search"
+                            onChange={(e) => { changeQuestions(e.target.value); }}
+                        />
+                    </div>
                     <Table
                         sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
                         size={'medium'}
                     >
                         <EnhancedTableHead
-                            numSelected={selected.length}
+                            numSelected={0}
                             order={order}
                             orderBy={orderBy}
                             onSelectAllClick={handleSelectAllClick}
@@ -317,7 +277,7 @@ export default function DataTableDemo() {
                                 return (
                                     <TableRow
                                         hover
-                                        onClick={(event) => handleClick(event, row.id)}
+                                        onClick={(event) => handleClick(event, index)}
                                         role="checkbox"
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
@@ -328,6 +288,7 @@ export default function DataTableDemo() {
                                         <TableCell padding="checkbox">
                                             <Checkbox
                                                 color="primary"
+                                                style={{ display: 'none' }}
                                                 checked={isItemSelected}
                                                 inputProps={{
                                                     'aria-labelledby': labelId,
@@ -340,29 +301,29 @@ export default function DataTableDemo() {
                                             scope="row"
                                             padding="none"
                                         >
-                                            {row.name}
+                                            {row.title}
                                         </TableCell>
-                                        <TableCell align="right">{row.calories}</TableCell>
-                                        <TableCell align="right">{row.fat}</TableCell>
-                                        <TableCell align="right">{row.carbs}</TableCell>
-                                        <TableCell align="right">{row.protein}</TableCell>
+                                        <TableCell align="right">{row.rating}</TableCell>
+                                        <TableCell align="right">{row.accuracy}%</TableCell>
+                                        <TableCell align="right">{row.total_accepted}</TableCell>
+                                        <TableCell align="right">{row.status}</TableCell>
                                     </TableRow>
                                 );
                             })}
                             {emptyRows > 0 && (
                                 <TableRow
                                     style={{
-                                        height: ( 53) * emptyRows,
+                                        height: (53) * emptyRows,
                                     }}
                                 >
-                                    <TableCell colSpan={6} />
+                                    <TableCell colSpan={5} />
                                 </TableRow>
                             )}
                         </TableBody>
                     </Table>
                 </TableContainer>
                 <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[10, 20, 30]}
                     component="div"
                     count={rows.length}
                     rowsPerPage={rowsPerPage}

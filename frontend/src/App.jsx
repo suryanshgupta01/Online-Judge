@@ -12,6 +12,7 @@ import Navbar from './components/Navbar'
 import ErrorPage from './components/ErrorPage';
 import LandingPage from './components/LandingPage';
 import ProblemSet from './components/ProblemSet';
+import ForgotPassword from './components/ForgotPassword';
 
 const router = createBrowserRouter([
   {
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
   {
     path: "/profile/:name1",
     element: <Profile />
-  }, 
+  },
   {
     path: '/signup',
     element: <Signup />
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
   {
     path: '/signin',
     element: <Signin />
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPassword />
   },
 
   {

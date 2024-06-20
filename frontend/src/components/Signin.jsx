@@ -4,12 +4,12 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { Link } from 'react-router-dom'
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Alert from '@mui/material/Alert';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import MicrosoftIcon from '@mui/icons-material/Microsoft';
 import GithubIcon from '@mui/icons-material/Github';
@@ -18,6 +18,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 import React, { useState, useEffect, useContext } from 'react'
 import { useUserContext } from '../useCustomContext'
 import { auth } from '../firebase'
+import { Link, useNavigate } from 'react-router-dom'
 import { GoogleAuthProvider, signInWithRedirect, GithubAuthProvider, browserPopupRedirectResolver, getRedirectResult } from 'firebase/auth'
 const baseURL = 'http://localhost:4000'
 
@@ -25,13 +26,21 @@ const Signin = () => {
     const { currentUser, login, deleteUser, signup, logout, handleGoogle, handleGithub, handleMicrosoft, handleTwitter, handleFacebook } = useUserContext()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-
+    const [successmessage, setSuccessMessage] = useState('')
+    const [errormessage, setErrorMessage] = useState('')
     const defaultTheme = createTheme();
+    const navigate = useNavigate()
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
+            setErrorMessage('')
             await login(email, password)
+            setSuccessMessage("User logged in successfully")
+            setTimeout(() => {
+                navigate('/')
+            }, 2000)
         } catch (err) {
+            setErrorMessage("Invalid Creditentials")
             console.log(err)
         }
 
@@ -80,6 +89,12 @@ const Signin = () => {
                             Sign in
                         </Typography>
                         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                            {successmessage && <Alert variant="filled" severity="success">
+                                {successmessage}
+                            </Alert>}
+                            {errormessage && <Alert variant="filled" severity="error">
+                                {errormessage}
+                            </Alert>}
                             <TextField
                                 margin="normal"
                                 required
@@ -143,7 +158,7 @@ const Signin = () => {
                     <img src={currentUser.photoURL} alt='profile' />
                     <button onClick={() => deleteUser()}>Delete User</button>
                 </div> : null}
-                 {/* 
+                {/* 
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="email">Email</label>
                     <input type="email" id='email' value={email} onChange={(e) => setEmail(e.target.value)} />

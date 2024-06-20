@@ -11,7 +11,10 @@ const Profile = () => {
     useEffect(() => {
         axios.get(`${baseURL}/user/profile/${name1}`)
             .then(response => {
-                setUser(response.data[0]);
+                if (response.msg) 
+                    alert(response.msg)
+                else
+                    setUser(response.data[0]);
             })
             .catch(error => console.error('Error fetching user data:', error));
     }, [name1]);

@@ -15,9 +15,9 @@ app.post('/create', async (req, res) => {
         if (!userAuth || !userAuth.isAdmin) {
             return res.status(401).send('Unauthorized');
         }
-        const newProb = new Problem(req.body);
+        const newProb = new Problem(req.body);  
         newProb.save();
-        res.send('Problem created');
+        res.send(newProb);
     }
     catch (err) {
         console.log(err);

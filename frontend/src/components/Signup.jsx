@@ -7,6 +7,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -20,20 +21,28 @@ import React, { useEffect, useState, useContext } from 'react'
 import { useUserContext } from '../useCustomContext'
 import { auth } from '../firebase'
 import { GoogleAuthProvider, signInWithRedirect, GithubAuthProvider, browserPopupRedirectResolver, getRedirectResult } from 'firebase/auth'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 const baseURL = 'http://localhost:4000'
 
 const Signup = () => {
     const { currentUser, login, signup, logout, handleGoogle, handleGithub, handleMicrosoft, handleTwitter, handleFacebook } = useUserContext()
     const [name1, setName1] = useState('')
     const [email, setEmail] = useState('')
+    const navigate = useNavigate()
     const [password, setPassword] = useState('')
-
+    const [successmessage, setSuccessMessage] = useState('')
+    const [errormessage, setErrorMessage] = useState('')
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            await signup(email, password)
+            setErrorMessage('')
+            await signup(name1, email, password)
+            setSuccessMessage("User created successfully")
+            setTimeout(() => {
+                navigate('/')
+            }, 2000)
         } catch (err) {
+            setErrorMessage("Something bad has happened")
             console.log(err)
         }
     }
@@ -81,28 +90,26 @@ const Signup = () => {
                         Sign up
                     </Typography>
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                        {successmessage && <Alert variant="filled" severity="success">
+                            {successmessage}
+                        </Alert>}
+                        {errormessage && <Alert variant="filled" severity="error">
+                            {errormessage}
+                        </Alert>}
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} >
                                 <TextField
                                     autoComplete="given-name"
                                     name="firstName"
                                     required
                                     fullWidth
                                     id="firstName"
-                                    label="First Name"
+                                    label="UserName"
                                     autoFocus
+                                    onChange={(e) => setName1(e.target.value)}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    id="lastName"
-                                    label="Last Name"
-                                    name="lastName"
-                                    autoComplete="family-name"
-                                />
-                            </Grid>
+
                             <Grid item xs={12}>
                                 <TextField
                                     required
@@ -111,6 +118,7 @@ const Signup = () => {
                                     label="Email Address"
                                     name="email"
                                     autoComplete="email"
+                                    onChange={(e) => setEmail(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -122,6 +130,7 @@ const Signup = () => {
                                     type="password"
                                     id="password"
                                     autoComplete="new-password"
+                                    onChange={(e) => setPassword(e.target.value)}
                                 />
                             </Grid>
 

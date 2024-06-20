@@ -3,22 +3,21 @@ import { auth } from './firebase'
 import { browserPopupRedirectResolver, OAuthProvider, GithubAuthProvider, GoogleAuthProvider, signInWithPopup, TwitterAuthProvider, FacebookAuthProvider } from 'firebase/auth'
 import axios from 'axios'
 
-
 const CustomContext = createContext();
 const UseCustomContext = ({ children }) => {
     const [currentUser, setCurrentUser] = useState()
     const [loading, setLoading] = useState(true)
 
-    async function signup(email, password) {
+    async function signup(name,email, password) {
         await auth.createUserWithEmailAndPassword(email, password)
         try {
             axios.post(`${baseURL}/user/register`, {
-                name: currentUser.displayName || 'User',
+                name: name || currentUser.displayName,
                 userid: currentUser.uid,
                 email: currentUser.email || email
             })
-            .then(response => console.log(response))
-            .catch(error => console.log(error))
+                .then(response => console.log(response))
+                .catch(error => console.log(error))
 
         } catch (err) {
             console.log(err)
@@ -71,7 +70,7 @@ const UseCustomContext = ({ children }) => {
     }
     const handleCreateUser = async (user) => {
         const baseURL = 'http://localhost:4000'
-        if(!user)return
+        if (!user) return
         const name1 = user.displayName || 'User'
         console.log(name1, user.uid, user.email)
         axios.post(`${baseURL}/user/register`, {
@@ -79,8 +78,8 @@ const UseCustomContext = ({ children }) => {
             userid: user.uid,
             email: user.email
         })
-        .then(response => console.log(response))
-        .catch(error => console.log(error))
+            .then(response => console.log(response))
+            .catch(error => console.log(error))
     }
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {

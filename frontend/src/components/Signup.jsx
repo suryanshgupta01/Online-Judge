@@ -27,7 +27,7 @@ const baseURL = 'http://localhost:4000'
 const Signup = () => {
     const { currentUser, login, signup, logout, handleGoogle, handleGithub, handleMicrosoft, handleTwitter, handleFacebook } = useUserContext()
     const [name1, setName1] = useState('')
-    const [email, setEmail] = useState('')
+    const [email, setEmail] = useState(localStorage.getItem('email'))
     const navigate = useNavigate()
     const [password, setPassword] = useState('')
     const [successmessage, setSuccessMessage] = useState('')
@@ -114,6 +114,7 @@ const Signup = () => {
                                 <TextField
                                     required
                                     fullWidth
+                                    defaultValue={email}
                                     id="email"
                                     label="Email Address"
                                     name="email"

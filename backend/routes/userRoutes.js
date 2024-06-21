@@ -54,4 +54,34 @@ app.post('/register', async (req, res) => {
         return res.status(500).send('Internal Server Error');
     }
 });
+
+app.post('/userinfo', async (req, res) => {
+    try {
+        const id = req.body.uid;
+        const user = await User.findOne({ userid: id });
+        return res.send(user);
+    } catch (err) {
+        console.error("Error fetching user info:", err);
+        return res.status(500).send('Internal Server Error');
+    }
+})
+
+app.put('/changeinfo', async (req, res) => {
+    try {
+        const { name, email, userid } = req.body
+        const user = await User.findOne({ userid })
+        if (!user)
+            return res.status(404).send("User not found")
+        const userpresent = await User.findOne({ name })
+        if (userpresent)
+            return res.status(404).send("User already exists")
+        user.name = name
+        user.email = email
+        await user.save()
+        return res.send(user)
+    } catch (err) {
+        console.error("Error changing user info:", err);
+        return res.status(500).send('Internal Server Error');
+    }
+})
 module.exports = app;

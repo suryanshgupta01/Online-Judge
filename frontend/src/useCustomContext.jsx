@@ -7,7 +7,7 @@ const baseURL = 'http://localhost:4000'
 const CustomContext = createContext();
 const UseCustomContext = ({ children }) => {
     const [currentUser, setCurrentUser] = useState()
-    const [globalUser, setGlobalUser] = useState()
+    const [globalUser, setGlobalUser] = useState({})
     const [loading, setLoading] = useState(true)
     const [userID, setUserID] = useState(0)
 
@@ -92,7 +92,7 @@ const UseCustomContext = ({ children }) => {
         axios.post(`${baseURL}/user/register`, {
             name: name1,
             userid: user.uid,
-            email: user.email,
+            email: user.email || 'No email',
             profile_pic: user.photoURL || "http://www.gravatar.com/avatar/?d=mp"
         })
             .then(response => console.log(response))

@@ -3,6 +3,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { useParams } from 'react-router-dom';
 import 'react-tabs/style/react-tabs.css';
 import axios from 'axios';
+// import MDEditor from "@uiw/react-md-editor";
 
 const baseURL = 'http://localhost:4000';
 
@@ -24,26 +25,34 @@ const Problems = () => {
     }
 
     return (
-        <Tabs>
-            <TabList>
-                <Tab>Title</Tab>
-                <Tab>Question</Tab>
-                <Tab>Constraints</Tab>
-                <Tab>Solved Test Cases</Tab>
-                <Tab>Rating</Tab>
-                <Tab>Submissions</Tab>
-            </TabList>
+        <>
+            <div>
+                <h2>{problem.title}</h2>
+                <p><strong>Question:</strong> {problem.question}</p>
+                <p><strong>Constraints:</strong> {problem.constraints}</p>
+                <p><strong>Solved Test Cases:</strong> {problem.solved_TC}</p>
+                <p><strong>Rating:</strong> {problem.rating}</p>
+                <p><strong>Total Submissions:</strong> {problem.total_submissions}</p>
+                <p><strong>Total Accepted:</strong> {problem.total_accepted}</p>
+            </div>
+            <div>
+                {/* <MDEditor.Markdown source={problem?.title} /> */}
 
-            <TabPanel><h2>{problem.title}</h2></TabPanel>
-            <TabPanel><p>{problem.question}</p></TabPanel>
-            <TabPanel><p>{problem.constraints}</p></TabPanel>
-            <TabPanel><p>{problem.solved_TC}</p></TabPanel>
-            <TabPanel><p>{problem.rating}</p></TabPanel>
-            <TabPanel>
-                <p>Total Submissions: {problem.total_submissions}</p>
-                <p>Total Accepted: {problem.total_accepted}</p>
-            </TabPanel>
-        </Tabs>
+                <div className="">
+                    <h2 className="">Input Format</h2>
+                    {/* <MDEditor.Markdown source={problem?.inputFormat} /> */}
+                </div>
+
+                <div className="">
+                    <h2 className="">Output Format</h2>
+                    {/* <MDEditor.Markdown source={problem?.outputFormat} /> */}
+                </div>
+                <div className="">
+                    <h2 className="">Constraints</h2>
+                    {/* <MDEditor.Markdown source={problem?.constraints} /> */}
+                </div>
+            </div>
+        </>
     );
 };
 

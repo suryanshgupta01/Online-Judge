@@ -12,7 +12,7 @@ import Container from '@mui/material/Container';
 import Alert from '@mui/material/Alert';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import MicrosoftIcon from '@mui/icons-material/Microsoft';
-import GithubIcon from '@mui/icons-material/Github';
+import GitHubIcon from '@mui/icons-material/Github';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import GoogleIcon from '@mui/icons-material/Google';
 import React, { useState, useEffect, useContext } from 'react'
@@ -55,13 +55,13 @@ const Signin = () => {
             console.error(error);
         }).finally(() => setIsLoading(false))
     }, []);
-   
+
     const handleGoogle1 = async () => {
         const provider = new GoogleAuthProvider()
         await signInWithRedirect(auth, provider, browserPopupRedirectResolver).catch(error => {
             console.error(error);
         })
-       
+
     }
     const handleGithub1 = async () => {
         const provider = new GithubAuthProvider()
@@ -143,7 +143,7 @@ const Signin = () => {
                             <Grid container display='flex' justifyContent='space-around' alignItems='center'>
                                 <Button disabled={isLoading} onClick={() => handleGoogle1()} variant="contained" color="error"><GoogleIcon /></Button>
                                 <Button disabled={isLoading} onClick={() => handleMicrosoft()} variant="contained" color="success"><MicrosoftIcon /></Button>
-                                <Button disabled={isLoading} onClick={() => handleGithub1()} variant="contained" style={{ backgroundColor: 'black' }}><GithubIcon /></Button>
+                                <Button disabled={isLoading} onClick={() => handleGithub1()} variant="contained" style={{ backgroundColor: 'black' }}><GitHubIcon /></Button>
                                 <Button disabled={isLoading} onClick={() => handleTwitter()} variant="contained"><TwitterIcon /></Button>
                             </Grid>
 
@@ -153,12 +153,7 @@ const Signin = () => {
             </ThemeProvider>
 
             <div>
-                {currentUser ? <div>
-                    <p>{currentUser.email}</p>
-                    <p>{currentUser.displayName}</p>
-                    <img src={currentUser.photoURL} alt='profile' />
-                    <button onClick={() => deleteUser()}>Delete User</button>
-                </div> : null}
+
                 {/* 
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="email">Email</label>

@@ -6,8 +6,8 @@ import UseCustomContext from './useCustomContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <UseCustomContext>
-    <React.StrictMode>
+    {/* <React.StrictMode> */}
       <App />
-    </React.StrictMode>
+    {/* </React.StrictMode> */}
    </UseCustomContext>
 )

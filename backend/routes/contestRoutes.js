@@ -34,7 +34,7 @@ app.post('/create', async (req, res) => {
 
 app.get('/contests', async (req, res) => {
     try {
-        const contests = await Contest.find().populate('problems');
+        const contests = await Contest.find().populate('problems').sort({ start_time: 1 });
         res.send(contests);
     }
     catch (err) {
@@ -42,9 +42,9 @@ app.get('/contests', async (req, res) => {
     }
 })
 
-app.get('/contest/:ID', async (req, res) => {
+app.get('/getcontest/:ID', async (req, res) => {
     try {
-        const contest = await Contest.findById(req.params.ID);
+        const contest = await Contest.findOne({ title: req.params.ID }).populate('problems');
         res.send(contest);
     }
     catch (err) {

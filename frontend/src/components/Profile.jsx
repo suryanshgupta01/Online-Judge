@@ -16,10 +16,10 @@ import Alert from '@mui/material/Alert';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useUserContext } from '../useCustomContext';
 import { useNavigate } from 'react-router-dom';
+import moment from 'moment'
 const baseURL = 'http://localhost:4000';
-
 const Profile = () => {
-    const { currentUser } = useUserContext()
+    const { currentUser, deleteUser } = useUserContext()
     const navigate = useNavigate();
     const { name1 } = useParams();
     const [user, setUser] = useState({});
@@ -32,7 +32,7 @@ const Profile = () => {
         e.preventDefault();
         setSuccessmessage('');
         setErrormessage('');
-        axios.put(`${baseURL}/user/changeinfo`, { name: name2, email: email2, userid: currentUser.uid })
+        axios.put(`${baseURL}/user/changeinfo`, { name: name2, email: email2, userid: currentUser.uid, profile_pic: user.profile_pic })
             .then(response => {
                 setErrormessage('');
                 console.log(response.data)
@@ -40,7 +40,40 @@ const Profile = () => {
                 navigate(`/profile/${name2}`)
             })
             .catch(error => { setSuccessmessage(''); setErrormessage(error.message); });
+    }
+    const handleDelete = () => {
+        const confirm = prompt("Are you sure you want to delete your account? This action cannot be undone.")
+        setErrormessage('')
+        setSuccessmessage('')
+        console.log(user._id)
+        if (confirm.toLocaleLowerCase() !== "yes") return;
+        axios.post(`${baseURL}/user/deleteuser`,
+            {
+                "ID": user._id
+            })
+            .then(response => {
+                console.log(response.data)
+                setSuccessmessage('Account deleted successfully')
+                setTimeout(() => {
+                    navigate('/')
+                }, 1000);
+            })
+            .catch(error => {
+                setSuccessmessage('')
+                setErrormessage("Signin again to delete accout")
+                console.log(error)
+            })
+
+        deleteUser()
+    }
+    const handleFileChange = (event) => {
+        const filereader = new FileReader()
+        filereader.onload = () => {
+            setUser({ ...user, profile_pic: filereader.result })
+            console.log(filereader.result)
         }
+        filereader.readAsDataURL(event.target.files[0])
+    }
     const defaultTheme = createTheme()
     useEffect(() => {
         setIsLoading(true);
@@ -55,13 +88,12 @@ const Profile = () => {
                     setEmail2(response.data.email);
                 }
             })
-            .catch(error => { console.error('Error fetching user data:', error) });
+            .catch(error => { console.error('Error fetching user data:', error); navigate('/User-not-found') });
         setIsLoading(false);
     }, [name1]);
 
     if (isLoading)
         return <div>Loading...</div>;
-
     return (
         <div>
 
@@ -86,8 +118,11 @@ const Profile = () => {
                                     width="24px" />
                                     Problems Submitted: {user.problems_submitted?.length}</p>
                                 <p>Admin Status: {user.isAdmin ? 'Yes' : 'No'}</p>
+                                <p>Account created: {moment(currentUser?.metadata.creationTime).fromNow()}</p>
                             </div>
-                            <img src={user.profile_pic} alt="Profile" style={{ width: '10rem', height: '10rem', right: '0' }} />
+                            <div>
+                                <img src={user.profile_pic} alt="Profile" style={{ width: '10rem', height: '10rem', right: '0' }} />
+                            </div>
                         </div>
 
                     </div>
@@ -105,8 +140,12 @@ const Profile = () => {
                                 }}
                             >
                                 <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                                    <LockOutlinedIcon />
+                                    <input type="file" id="file" onChange={(e) => handleFileChange(e)} style={{ display: 'none' }} accept="image/*" />
+                                    <label htmlFor="file">
+                                        <img src={user.profile_pic} alt="Profile" style={{ width: '48px', right: '0' }} />
+                                    </label>
                                 </Avatar>
+                                <div style={{ position: 'relative', left: '5%', top: '-25px' }}>🖋️</div>
                                 <Typography component="h1" variant="h5">
                                     Update profile
                                 </Typography>
@@ -149,9 +188,9 @@ const Profile = () => {
                                     </Grid>
                                     <Grid container justifyContent="flex-end">
                                         <Grid item>
-                                            <a>
-
-                                            </a>
+                                            <div onClick={handleDelete} style={{ cursor: 'pointer', color: 'red' }}>
+                                                Delete account
+                                            </div>
                                         </Grid>
                                     </Grid>
                                     <Button
@@ -160,7 +199,7 @@ const Profile = () => {
                                         variant="contained"
                                         sx={{ mt: 3, mb: 2 }}
                                     >
-                                        Sign Up
+                                        Update user
                                     </Button>
 
 
@@ -170,7 +209,7 @@ const Profile = () => {
                     </ThemeProvider>
                 </TabPanel>
                 <TabPanel>
-                    <table class="table table-hover table-dark" style={{ marginBottom: '2rem' }}>
+                    <table className="table table-hover table-dark" style={{ marginBottom: '2rem' }}>
                         <thead>
                             <tr>
                                 <th scope="col">Problem</th>

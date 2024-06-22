@@ -236,11 +236,11 @@ export default function DataTableDemo({ problems }) {
                 page * rowsPerPage,
                 page * rowsPerPage + rowsPerPage,
             ),
-        [order, orderBy, page, rowsPerPage,rows],
+        [order, orderBy, page, rowsPerPage, rows],
     );
     const changeQuestions = (ques) => {
         ques = ques.trim()
-        if (ques === '') return
+        if (ques === '') { setRows(problems); return }
         let newrows = problems.filter(row => row.title.toLowerCase().includes(ques.toLowerCase()));
         setRows(newrows);
     }
@@ -332,10 +332,6 @@ export default function DataTableDemo({ problems }) {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-            {/* <FormControlLabel
-                control={<Switch checked={dense} onChange={handleChangeDense} />}
-                label="Dense padding"
-            /> */}
         </Box>
     );
 }

@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react'
 import { useUserContext } from './useCustomContext'
-import { Route, useParams, Link, RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Route, useParams, Link, RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
 
 import './App.css'
 import Signup from './components/Signup'
@@ -13,49 +13,72 @@ import ErrorPage from './components/ErrorPage';
 import LandingPage from './components/LandingPage';
 import ProblemSet from './components/ProblemSet';
 import ForgotPassword from './components/ForgotPassword';
+import Admin from './components/Admin';
+import Contest from './components/Contest';
+
+function Home() {
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  )
+}
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <LandingPage />
-  }, {
-    path: '/problemset',
-    element: <ProblemSet />
-  },
-  {
-    path: '/problem/:Pname',
-    element: <Problems />
-  },
-  {
-    path: '/contests',
-    element: <Contests />
-  },
-  {
-    path: "/profile/:name1",
-    element: <Profile />
-  },
-  {
-    path: '/signup',
-    element: <Signup />
-  },
-  {
-    path: '/signin',
-    element: <Signin />
-  },
-  {
-    path: '/forgot-password',
-    element: <ForgotPassword />
-  },
-
-  {
-    path: "*",
-    element: <ErrorPage />
+    element: <Home />,
+    children: [
+      {
+        path: "",
+        element: <LandingPage />
+      },
+      {
+        path: 'problemset',
+        element: <ProblemSet />
+      },
+      {
+        path: 'problem/:Pname',
+        element: <Problems />
+      },
+      {
+        path: 'contests',
+        element: <Contests />
+      },
+      {
+        path: 'contest/:ID',
+        element: <Contest />
+      },
+      {
+        path: "profile/:name1",
+        element: <Profile />
+      },
+      {
+        path: 'signup',
+        element: <Signup />
+      },
+      {
+        path: 'signin',
+        element: <Signin />
+      },
+      {
+        path: 'admin',
+        element: <Admin />
+      },
+      {
+        path: 'forgot-password',
+        element: <ForgotPassword />
+      },
+      {
+        path: "*",
+        element: <ErrorPage />
+      }]
   }
 ])
 function App() {
   return (
     <>
-      <Navbar />
       <RouterProvider router={router} />
     </>
   )

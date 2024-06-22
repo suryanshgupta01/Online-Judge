@@ -16,19 +16,11 @@ app.get('/profile/:ID', async (req, res) => {
             console.log("nothing found")
             return res.status(404).send({ "msg": "User not found" });
         }
-        console.log(details)
         return res.send(details);
     } catch (error) {
         console.error('Error fetching user by name:', error);
     }
 });
-const makeusername = (email, name) => {
-    const random = Math.floor(Math.random() * 9000) + 1000;
-    if (!name)
-        return email.split('@')[0] + random.toString()
-    const names = name.split(' ')[0] + random.toString()
-    return names
-}
 
 app.post('/register', async (req, res) => {
     console.log("in register API")
@@ -61,26 +53,41 @@ app.post('/userinfo', async (req, res) => {
         const user = await User.findOne({ userid: id });
         return res.send(user);
     } catch (err) {
-        console.error("Error fetching user info:", err);
+        console.error("Error fetching user info:");
         return res.status(500).send('Internal Server Error');
     }
 })
 
 app.put('/changeinfo', async (req, res) => {
     try {
-        const { name, email, userid } = req.body
+        const { name, email, userid, profile_pic } = req.body
+        if (!name || !email || !userid)
+            return res.status(400).send("Information is missing")
         const user = await User.findOne({ userid })
         if (!user)
             return res.status(404).send("User not found")
         const userpresent = await User.findOne({ name })
-        if (userpresent)
+        if (userpresent && user.userid != userid)
             return res.status(404).send("User already exists")
         user.name = name
         user.email = email
+        user.profile_pic = profile_pic
         await user.save()
         return res.send(user)
     } catch (err) {
         console.error("Error changing user info:", err);
+        return res.status(500).send('Internal Server Error');
+    }
+})
+
+app.post('/deleteuser', async (req, res) => {
+    try {
+        const id = req.body.ID
+        console.log("in delete user API", id, req.body.ID)
+        await User.findByIdAndDelete({ _id: id })
+        return res.send("User deleted")
+    } catch (err) {
+        console.error("Error deleting user:", err);
         return res.status(500).send('Internal Server Error');
     }
 })

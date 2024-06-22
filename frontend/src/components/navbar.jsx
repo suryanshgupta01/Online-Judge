@@ -15,7 +15,8 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useUserContext } from '../useCustomContext';
-import { Link } from '@mui/material';
+// import { Link } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 function Navbar() {
     const { logout, currentUser } = useUserContext()
@@ -53,25 +54,32 @@ function Navbar() {
             <div className="container-fluid">
                 <div>
 
-                    <a className="navbar-brand" href='/'>Home</a>
-                    <a className="navbar-brand" href='/problemset'>ProblemSet</a>
-                    <a className="navbar-brand" href='/contests'>Contests</a>
+                    <Link className="navbar-brand" to='/'>Home</Link>
 
                 </div>
-                <form className="d-flex" role="search">
-                    {!currentUser ? <>
-                        <a href='/signin' className="btn btn-outline-danger" >Login</a>
-                        <a href='/signup' className="btn btn-outline-primary">Signup</a>
-                    </> : <span className="navbar-text">
-                        <div className='makerow'>
+                <div>
 
+
+
+                    {!currentUser ? <>
+                        <Link className="navbar-brand" to='/problemset'>Problemset</Link>
+                        <Link className="navbar-brand" to='/contests'>Contests</Link>
+                        <Link to='/signin' className="btn btn-outline-danger" style={{ marginRight: '0.5rem' }}>Login</Link>
+                        <Link to='/signup' className="btn btn-outline-primary">Signup</Link>
+                    </> : <span className="navbar-text">
+                        <div className='makerow' >
                             {/* <img src={currentUser.photoURL} alt="profile pic" style={{ borderRadius: '50%', height: '45px', width: '45px' }} /> */}
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }} style={{ marginRight: '3.7rem', color: 'gray', fontSize: '1rem' }}>
-                                <span style={{ marginRight: '0.5rem' }}>
+                            <Link className="navbar-brand" to='/problemset'>Problemset</Link>
+                            <Link className="navbar-brand" to='/contests'>Contests</Link>
+                            <div style={{ marginRight: '1rem', color: 'gray', fontSize: '1rem' }}>
+                                {globalUser.isAdmin ? <span ><Link to='/admin' style={{ textDecoration: 'none' }}>🟢Admin</Link></span> : <></>}
+                                <span style={{ marginRight: '0.5rem', marginLeft: '1rem' }}>
                                     {currentUser.displayName ? currentUser.displayName : currentUser.email}
                                 </span>
-                                <Avatar alt="profile pic" src={currentUser.photoURL ? currentUser.photoURL : "http://www.gravatar.com/avatar/?d=mp"} />
-                            </IconButton>
+                                <IconButton sx={{ p: 0 }} >
+                                    <Avatar onClick={handleOpenUserMenu} alt="profile pic" src={globalUser.profile_pic ? globalUser.profile_pic : "http://www.gravatar.com/avatar/?d=mp"} />
+                                </IconButton>
+                            </div>
                             <Menu
                                 sx={{ mt: '45px' }}
                                 id="menu-appbar"
@@ -89,13 +97,15 @@ function Navbar() {
                                 onClose={handleCloseUserMenu}
                             >
                                 <MenuItem onClick={handleCloseUserMenu}>
-                                    {globalUser ? <Typography textAlign="center"> <a href={`/profile/${globalUser.name}`}>Profile</a>  </Typography> : <></>}
+                                    {globalUser ? <Typography textAlign="center"> <Link to={`/profile/${globalUser.name}`}>Profile</Link>  </Typography> : <></>}
                                 </MenuItem>
                                 <MenuItem onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center"><Link onClick={() => logout()}> Logout</Link> </Typography>
+                                    <Typography textAlign="center">
+                                        <Link onClick={() => logout()}> Logout</Link>
+                                    </Typography>
                                 </MenuItem>
                                 <MenuItem onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center"> <a href={`/problemset`}>Problemset</a> </Typography>
+                                    <Typography textAlign="center"> <Link to={`/problemset`}>Problemset</Link> </Typography>
                                 </MenuItem>
 
                             </Menu>
@@ -104,7 +114,8 @@ function Navbar() {
                     }
                     {/* <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" /> */}
                     {/* <button className="btn btn-outline-success" type="submit">Search</button> */}
-                </form>
+                </div>
+
             </div>
         </nav >
     );

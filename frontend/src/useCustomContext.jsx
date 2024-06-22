@@ -38,6 +38,7 @@ const UseCustomContext = ({ children }) => {
     }
 
     function logout() {
+        localStorage.removeItem('tried')
         return auth.signOut()
     }
 
@@ -53,6 +54,7 @@ const UseCustomContext = ({ children }) => {
         return auth.currentUser.updatePassword(password)
     }
     function deleteUser() {
+        localStorage.removeItem('tried')
         return auth.currentUser.delete()
     }
     const handleGoogle = async () => {
@@ -88,7 +90,7 @@ const UseCustomContext = ({ children }) => {
         console.log("in signup my base")
         if (!user) return
         const name1 = makeusername(user.email, user.displayName)
-        console.log(name1, user.uid, user.email,user.photoURL)
+        console.log(name1, user.uid, user.email, user.photoURL)
         axios.post(`${baseURL}/user/register`, {
             name: name1,
             userid: user.uid,
@@ -97,13 +99,15 @@ const UseCustomContext = ({ children }) => {
         })
             .then(response => console.log(response))
             .catch(error => console.log("error creating user in my DB"))
+        localStorage.setItem('tried', 1);
     }
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             setCurrentUser(user)
             if (user)
                 setUserID(user.uid)
-            handleCreateUser(user)
+            if (!localStorage.getItem('tried'))
+                handleCreateUser(user)
             console.log(user)
             setLoading(false)
         })

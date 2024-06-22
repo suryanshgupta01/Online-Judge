@@ -13,7 +13,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import GoogleIcon from '@mui/icons-material/Google';
 import MicrosoftIcon from '@mui/icons-material/Microsoft';
-import GithubIcon from '@mui/icons-material/GitHub';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 const defaultTheme = createTheme();
 
@@ -138,11 +138,9 @@ const Signup = () => {
                         </Grid>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <a>
                                     <Link to="/signin" variant="body2">
                                         Already have an account? Sign in
                                     </Link>
-                                </a>
                             </Grid>
                         </Grid>
                         <Button
@@ -156,7 +154,7 @@ const Signup = () => {
                         <Grid container display='flex' justifyContent='space-around' alignItems='center'>
                             <Button disabled={isLoading} onClick={() => handleGoogle1()} variant="contained" color="error"><GoogleIcon /></Button>
                             <Button disabled={isLoading} onClick={() => handleMicrosoft()} variant="contained" color="success"><MicrosoftIcon /></Button>
-                            <Button disabled={isLoading} onClick={() => handleGithub1()} variant="contained" style={{ backgroundColor: 'black' }}><GithubIcon /></Button>
+                            <Button disabled={isLoading} onClick={() => handleGithub1()} variant="contained" style={{ backgroundColor: 'black' }}><GitHubIcon /></Button>
                             <Button disabled={isLoading} onClick={() => handleTwitter()} variant="contained"><TwitterIcon /></Button>
                         </Grid>
 

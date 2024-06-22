@@ -13,17 +13,28 @@ const problemSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    solved_TC: {
+    solved_TC_input: {
         type: String
     },
-    all_TC: [{
+    solved_TC_output: {
+        type: String
+    },
+    allTCarr: [{
         type: String
     }],
-    all_correct_soln: [{
+    allCorrectSolnArr: [{
         type: String
     }],
     rating: {
         type: Number,
+        required: true
+    },
+    inputFormat: {
+        type: String,
+        required: true
+    },
+    outputFormat: {
+        type: String,
         required: true
     },
     submitted_by: [{
@@ -37,6 +48,10 @@ const problemSchema = new mongoose.Schema({
     total_accepted: {
         type: Number,
         default: 0
+    },
+    author: {
+        type: String,
+        required: true
     },
     hidden: {
         type: Boolean,

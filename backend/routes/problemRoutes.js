@@ -8,7 +8,7 @@ app.get('/', (req, res) => {
 });
 app.post('/create', async (req, res) => {
     try {
-        if (!req.body || !req.body.title || !req.body.question || !req.body.constraints || !req.body.solvedTCInput || !req.body.solvedTCOutput || !req.body.allTCarr || !req.body.allCorrectSolnArr || !req.body.rating || !req.body.inputFormat || !req.body.outputFormat || !req.body.userid) {
+        if (!req.body || !req.body.title || !req.body.question || !req.body.constraints || !req.body.solved_TC_input || !req.body.solved_TC_output || !req.body.allTCarr || !req.body.allCorrectSolnArr || !req.body.rating || !req.body.inputFormat || !req.body.outputFormat || !req.body.userid) {
             console.log(req.body)
             return res.status(400).send('Request body is missing');
         }

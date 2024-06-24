@@ -37,10 +37,6 @@ const problemSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    submitted_by: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
     total_submissions: {
         type: Number,
         default: 0

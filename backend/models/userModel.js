@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
     },
     problems_submitted: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Problem"
+        ref: "Submission"
     }],
     profile_pic: {
         type: String,

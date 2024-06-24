@@ -79,10 +79,10 @@ const Profile = () => {
         setIsLoading(true);
         axios.get(`${baseURL}/user/profile/${name1}`)
             .then(response => {
-                console.log(response.data)
                 if (response.msg)
                     alert(response.msg)
                 else {
+                    console.log(response.data.problems_submitted)
                     setUser(response.data);
                     setName2(response.data.name);
                     setEmail2(response.data.email);

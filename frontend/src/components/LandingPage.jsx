@@ -16,7 +16,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Snackbar from '@mui/material/Snackbar';
 import MicrosoftIcon from '@mui/icons-material/Microsoft';
-import GitHubIcon from '@mui/icons-material/GitHub';
+// import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import GoogleIcon from '@mui/icons-material/Google';
 import { GoogleAuthProvider, signInWithRedirect, GithubAuthProvider, browserPopupRedirectResolver, getRedirectResult } from 'firebase/auth'
@@ -108,7 +108,7 @@ function LandingPage() {
                     <Grid container display='flex' justifyContent='space-around' alignItems='center'>
                       <Button disabled={isLoading} onClick={() => handleGoogle1()} variant="contained" color="error"><GoogleIcon /></Button>
                       <Button disabled={isLoading} onClick={() => handleMicrosoft()} variant="contained" color="success"><MicrosoftIcon /></Button>
-                      <Button disabled={isLoading} onClick={() => handleGithub1()} variant="contained" style={{ backgroundColor: 'black' }}><GitHubIcon /></Button>
+                      <Button disabled={isLoading} onClick={() => handleGithub1()} variant="contained" style={{ backgroundColor: 'black', height: '2.3rem' }}><i style={{ fontSize: '1.4rem' }} class="bi bi-github"></i></Button>
                       <Button disabled={isLoading} onClick={() => handleTwitter()} variant="contained"><TwitterIcon /></Button>
                     </Grid>
 

@@ -7,13 +7,10 @@ app.get('/', (req, res) => {
 });
 
 app.get('/profile/:ID', async (req, res) => {
-    console.log("in profile/id API")
     try {
         const id = req.params.ID;
-        console.log(id)
-        const details = await User.findOne({ name: id });
+        const details = await User.findOne({ name: id }).populate('problems_submitted')
         if (!details || details.length == 0) {
-            console.log("nothing found")
             return res.status(404).send({ "msg": "User not found" });
         }
         return res.send(details);

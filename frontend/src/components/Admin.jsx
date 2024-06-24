@@ -12,8 +12,8 @@ function Admin() {
     const [title, setTitle] = useState('')
     const [question, setQuestion] = useState('')
     const [constraints, setConstraints] = useState('')
-    const [solvedTCInput, setSolvedTCInput] = useState('')
-    const [solvedTCOutput, setSolvedTCOutput] = useState('')
+    const [solved_TC_input, setSolvedTCInput] = useState('')
+    const [solved_TC_output, setSolvedTCOutput] = useState('')
     const [allTC, setAllTC] = useState('')
     const [allCorrectSoln, setAllCorrectSoln] = useState('')
     const [rating, setRating] = useState('')
@@ -30,12 +30,12 @@ function Admin() {
     const [duration, setDuration] = useState('')
     const handleSubmit = (e) => {
         e.preventDefault()
-        const allTCarr = allTC.split('\n')
-        const allCorrectSolnArr = allCorrectSoln.split('\n')
+        const allTCarr = allTC.split('\n\n')
+        const allCorrectSolnArr = allCorrectSoln.split('\n\n')
         setSuccessMsg('')
         setErrorMsg('')
         axios.post(`${baseURL}/problem/create`, {
-            userid: currentUser.uid, title, hidden: isContest, question, constraints, solvedTCInput, solvedTCOutput,
+            userid: currentUser.uid, title, hidden: isContest, question, constraints, solved_TC_input, solved_TC_output,
             allTCarr, allCorrectSolnArr, rating, inputFormat, outputFormat, submitted_by: []
         })
             .then((res) => {
@@ -59,7 +59,7 @@ function Admin() {
                 console.log(err)
                 setErrorMsg('Error creating problem')
             })
-        console.log(title, question, constraints, solvedTCInput, solvedTCOutput, allTCarr, allCorrectSolnArr, rating, inputFormat, outputFormat)
+        console.log(title, question, constraints, solved_TC_input, solved_TC_output, allTCarr, allCorrectSolnArr, rating, inputFormat, outputFormat)
     }
     const handleContestSubmit = (e) => {
         if (title.trim() != '') {
@@ -229,9 +229,11 @@ function Admin() {
                             sx={{ width: '48%' }}
                             name="solved_TC_input"
                             onChange={(e) => setSolvedTCInput(e.target.value)}
-                            value={solvedTCInput}
+                            value={solved_TC_input}
                             label="Solved Test Case Input"
-                            id="solved_TC_input"
+                            id="solved_TC_input"    
+                            multiline
+                            rows={2}
                         />
                         <TextField
                             margin="normal"
@@ -239,9 +241,11 @@ function Admin() {
                             sx={{ width: '48%' }}
                             name="solved_TC_output"
                             onChange={(e) => setSolvedTCOutput(e.target.value)}
-                            value={solvedTCOutput}
+                            value={solved_TC_output}
                             label="Solved Test Case Output"
                             id="solved_TC_output"
+                            multiline
+                            rows={2}
                         />
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -254,6 +258,8 @@ function Admin() {
                             value={inputFormat}
                             label="Input Format"
                             id="input_format"
+                            multiline
+                            rows={2}
                         />
                         <TextField
                             margin="normal"
@@ -264,6 +270,8 @@ function Admin() {
                             value={outputFormat}
                             label="Output Format"
                             id="output_format"
+                            multiline
+                            rows={2}
                         />
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>

@@ -12,7 +12,14 @@ import Avatar1 from '../UI/Avatar';
 import moment from 'moment';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
-// import MDEditor from "@uiw/react-md-editor";
+
+const MathExpression = ({ expression }) => {
+    const html = katex.renderToString(expression, {
+        throwOnError: false
+    });
+
+    return <span dangerouslySetInnerHTML={{ __html: html }} />;
+};
 
 const baseURL = 'http://localhost:4000';
 const baseURLsubs = 'http://localhost:4500';
@@ -166,8 +173,13 @@ int main(){
                                 </div>
                                 <br />
                                 <p><strong>Problem Statement :<br /></strong>
-                                    <span dangerouslySetInnerHTML={{ __html: problem.question }}></span></p>
-                                <p><strong>Constraints :</strong><br /> {problem.constraints}</p>
+                                    {problem.question.split('$$').map((ele, ind, arr) => (
+                                        (ind === 0 || ind === arr.length - 1)
+                                            ? ele
+                                            : <MathExpression expression={ele} />
+                                    ))}
+                                </p>
+                                <p><strong>Constraints :</strong><br /><MathExpression expression={problem.constraints} />                                </p>
                                 <p><strong>Sample Test Case :</strong><br /> {problem.solved_TC_input}</p>
                                 <p><strong>Sample Test Case :</strong><br /> {problem.solved_TC_output}</p>
                                 <p><strong>Input Format:</strong><br /> {problem.inputFormat}</p>
@@ -236,7 +248,7 @@ int main(){
 
                 </div>
 
-                <div className="gutter gutter-vertical" style={{ width: '6px',  cursor: 'col-resize' }}></div>
+                <div className="gutter gutter-vertical" style={{ width: '6px', cursor: 'col-resize' }}></div>
 
                 <div style={{ width: '55vw' }}>
                     <div>
@@ -313,3 +325,4 @@ int main(){
 };
 
 export default Problems;
+

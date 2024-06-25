@@ -74,7 +74,7 @@ button.active {
 
 p {
     text-align: left;
-    padding: 10px;
+    padding: 2px;
 }
 
 .content {
@@ -100,14 +100,14 @@ p {
 
 
 .content {
-    padding: 0 18px;
+    padding: 0px;
+    /* width: 70vw; */
     height: 0;
-    width: 60vw;
     scroll-behavior: smooth;
     overflow: scroll;
     overflow-x: hidden;
     transition: height 0.2s ease-out;
-    background-color: #f1f1f1
+    background-color: white;
 }
 
 .content.active {

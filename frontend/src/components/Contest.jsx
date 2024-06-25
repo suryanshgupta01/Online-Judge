@@ -6,6 +6,7 @@ const baseURL = 'http://localhost:4000'
 function Contest() {
     const { ID } = useParams()
     console.log(ID)
+    const [allcontestsubmission,setAllcontestsubmission]=useState([])
     const [contest, setContest] = useState({})
     useEffect(() => {
         axios.get(`${baseURL}/contest/getcontest/${ID.split('-').join(' ')}`)
@@ -39,17 +40,17 @@ function Contest() {
     }, []);
     return (
         <div>
-            <h1>TOGGLE TABS</h1>
+            <h1>{contest.title}</h1>
             <div className="wrapper">
                 <div className="buttonWrapper">
-                    <button className="tab-button active" style={{ borderTopLeftRadius: '10px' }} data-id="home">Home</button>
-                    <button className="tab-button" data-id="about">About</button>
-                    <button className="tab-button" style={{ borderTopRightRadius: '10px' }} data-id="contact">Contact</button>
+                    <button className="tab-button active" style={{ borderTopLeftRadius: '10px' }} data-id="home">Questions</button>
+                    <button className="tab-button" data-id="about">Submissions</button>
+                    <button className="tab-button" style={{ borderTopRightRadius: '10px' }} data-id="contact">Leaderboard</button>
                 </div>
                 <div className="contentWrapper">
-                    <p className="content active" id="home">
-                        <table className="table table-hover table-dark" style={{ marginBottom: '2rem' }}>
-                            <thead>
+                    <p className="content active" id="home" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                        <table className="table table-hover table-striped" style={{ marginBottom: '2rem' }}>
+                            <thead className='table-dark'>
                                 <tr>
                                     <th scope="col">S.No.</th>
                                     <th scope="col">Title</th>
@@ -84,12 +85,31 @@ function Contest() {
                             </tbody>
                         </table >
                     </p>
-                    <p className="content" id="about">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis maxime itaque veritatis iste soluta placeat obcaecati laudantium repellat corrupti! Eius sunt rerum inventore magnam? Perspiciatis facere error suscipit quisquam quibusdam.
-                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Totam, corporis voluptatem quo dignissimos eius quis perferendis vero culpa reiciendis nulla quisquam fugit minima sed molestiae excepturi beatae repudiandae ea? Aliquid!
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Enim sapiente officia vel consequuntur, hic at quis? Illo repellendus dolores totam facilis sunt sequi qui hic, nulla ratione harum porro perspiciatis.
+                    <p className="content" id="about" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                        <table className="table table-hover table-striped" >
+                            <thead className='table-dark'>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">UserName</th>
+                                    <th scope="col">Submitted</th>
+                                    <th scope="col">Language</th>
+                                    <th scope="col">Verdict</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {allcontestsubmission?.map((problem) => (
+                                    <tr>
+                                        <td ><Avatar1 info={problem} /></td>
+                                        <td >{problem.userName?.substr(0, 10)}</td>
+                                        <td>{moment(new Date(problem.createdAt)).fromNow()}</td>
+                                        <td>{problem.language}</td>
+                                        <td style={{ backgroundColor: (problem.verdict != 'AC') ? 'red' : 'green' }}>{problem.verdict.split('\n')[0]}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </p>
-                    <p className="content" id="contact">
+                    <p className="content" id="contact" style={{ maxHeight: '70vh', overflowY: 'auto'}}>
                         Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos sit incidunt nostrum? Magni, quam vero, magnam odio similique ipsam minima et repellat rerum cupiditate totam in repudiandae. Sed, dicta corrupti?
                         Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, dolore quas quis earum incidunt voluptas! Ducimus quod libero aliquid consequatur et modi porro officia, quibusdam quas commodi placeat maxime qui?
                         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ab ea debitis eligendi accusamus deleniti maxime pariatur. Assumenda, facere placeat eius quam magni accusantium aut quae minima iure atque incidunt illum.

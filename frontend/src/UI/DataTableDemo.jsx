@@ -304,7 +304,7 @@ export default function DataTableDemo({ problems }) {
                                             {row.title}
                                         </TableCell>
                                         <TableCell align="right">{row.rating}</TableCell>
-                                        <TableCell align="right">{row.accuracy}%</TableCell>
+                                        <TableCell align="right">{parseFloat(row.accuracy).toFixed(2)}%</TableCell>
                                         <TableCell align="right">{row.total_accepted}</TableCell>
                                         <TableCell align="right">{row.status}</TableCell>
                                     </TableRow>

@@ -33,8 +33,8 @@ const Contests = () => {
 
     return (<>
         <h1>Current Contests</h1>
-        <table className="table table-hover table-dark" style={{ marginBottom: '2rem' }}>
-            <thead>
+        <table className="table table-hover table-striped " style={{ marginBottom: '2rem' }}>
+            <thead className='table-dark'>
                 <tr>
                     <th scope="col">S.No.</th>
                     <th scope="col">Title</th>
@@ -67,8 +67,8 @@ const Contests = () => {
         </table >
 
         <h1>Upcoming Contests</h1>
-        <table className="table table-hover table-dark" style={{ marginBottom: '2rem' }}>
-            <thead>
+        <table className="table table-hover table-striped" style={{ marginBottom: '2rem' }}>
+            <thead className='table-dark'>
                 <tr>
                     <th scope="col">S.No.</th>
                     <th scope="col">Title</th>
@@ -98,8 +98,8 @@ const Contests = () => {
         </table >
 
         <h1>Past Contests</h1>
-        <table className="table table-hover table-dark" style={{ marginBottom: '2rem' }}>
-            <thead>
+        <table className="table table-hover table-striped" style={{ marginBottom: '2rem' }}>
+            <thead className='table-dark'>
                 <tr>
                     <th scope="col">S.No.</th>
                     <th scope="col">Title</th>

@@ -17,6 +17,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useUserContext } from '../useCustomContext';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment'
+import Avatar1 from '../UI/Avatar';
 const baseURL = 'http://localhost:4000';
 const Profile = () => {
     const { currentUser, deleteUser } = useUserContext()
@@ -75,6 +76,7 @@ const Profile = () => {
         filereader.readAsDataURL(event.target.files[0])
     }
     const defaultTheme = createTheme()
+
     useEffect(() => {
         setIsLoading(true);
         axios.get(`${baseURL}/user/profile/${name1}`)
@@ -82,8 +84,10 @@ const Profile = () => {
                 if (response.msg)
                     alert(response.msg)
                 else {
+                    let problems_submitted = response.data.problems_submitted
+                    problems_submitted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                     console.log(response.data.problems_submitted)
-                    setUser(response.data);
+                    setUser({ ...response.data, problems_submitted });
                     setName2(response.data.name);
                     setEmail2(response.data.email);
                 }
@@ -97,10 +101,11 @@ const Profile = () => {
     return (
         <div>
 
-            <Tabs>
+            <Tabs >
                 <TabList>
                     <Tab>Profile</Tab>
-                    <Tab>Update profile</Tab>
+                    {(user.userid == currentUser.uid) ?
+                        <Tab>Update profile</Tab> : null}
                     <Tab>Submissions</Tab>
 
                 </TabList>
@@ -127,9 +132,10 @@ const Profile = () => {
 
                     </div>
                 </TabPanel>
-                <TabPanel>
-                    <ThemeProvider theme={defaultTheme}>
-                        <Container component="main" maxWidth="xs">
+                {(user.userid == currentUser.uid) ?
+                <TabPanel >
+                    <ThemeProvider theme={defaultTheme} >
+                        <Container component="main" maxWidth="xs" >
                             <CssBaseline />
                             <Box
                                 sx={{
@@ -208,29 +214,32 @@ const Profile = () => {
                         </Container>
                     </ThemeProvider>
                 </TabPanel>
+                :null}
                 <TabPanel>
-                    <table className="table table-hover table-dark" style={{ marginBottom: '2rem' }}>
-                        <thead>
-                            <tr>
-                                <th scope="col">Problem</th>
-                                <th scope="col">Submission Time</th>
-                                <th scope="col">Title</th>
-                                <th scope="col">Language</th>
-                                <th scope="col">Verdict</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {user?.problems_submitted?.map((problem) => (
+                    <div style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+                        <table className="table table-hover " style={{ marginBottom: '2rem' }}>
+                            <thead className='table-dark'>
                                 <tr>
-                                    <td>{problem.problem_id}</td>
-                                    <td>{problem.submission_time}</td>
-                                    <td>{problem.title}</td>
-                                    <td>{problem.language}</td>
-                                    <td>{problem.verdict}</td>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Submission Time</th>
+                                    <th scope="col">Language</th>
+                                    <th scope="col">Verdict</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {user?.problems_submitted?.map((problem) => (
+                                    <tr>
+                                        <td><Avatar1 info={problem} /></td>
+                                        <td>{problem.problemName?.substr(0, 10)}</td>
+                                        <td>{moment(new Date(problem.createdAt)).format('MMMM Do YYYY, h:mm a')}</td>
+                                        <td>{problem.language}</td>
+                                        <td>{problem.verdict.split('\n')[0]}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </TabPanel>
 
             </Tabs>

@@ -5,8 +5,8 @@ const Problem = require('../models/problemModel');
 const { executeCode } = require('../executeCode');
 const Submission = require('../models/submissionModel');
 const app = express();
-const createSubmission = async (problem, user, code, language, verdict) => {
-    const submission = new Submission({ problem, user, code, language, verdict })
+const createSubmission = async (problem, problemName, user, code, language, verdict) => {
+    const submission = new Submission({ problem, problemName, user, code, language, verdict })
     await submission.save()
     return submission._id
 }
@@ -44,7 +44,7 @@ app.post('/run', async (req, res) => {
                 if (answer.trim() != output.trim()) {
                     problem.total_submissions = problem.total_submissions + 1
                     await problem.save()
-                    const sub = await createSubmission(problem._id, userinfo._id, code, lang, 'WA on TC ' + (pass + 1))
+                    const sub = await createSubmission(problem._id, problem.title, userinfo._id, code, lang, 'WA on TC ' + (pass + 1) + '\nWrong TestCase: \n' + problem.allTCarr[pass] + '\nYour output:\n' + answer + '\nCorrect output:\n' + output)
                     userinfo.problems_submitted.push(sub)
                     await userinfo.save()
                     return res.send({ wrongTC: problem.allTCarr[pass], Wooutput: answer, Coutput: output, pass, isCorrect: false });
@@ -53,13 +53,13 @@ app.post('/run', async (req, res) => {
             problem.total_accepted = problem.total_accepted + 1
             problem.total_submissions = problem.total_submissions + 1
             await problem.save()
-            const sub = await createSubmission(problem._id, userinfo._id, code, lang, 'AC')
+            const sub = await createSubmission(problem._id, problem.title, userinfo._id, code, lang, 'AC')
             userinfo.problems_submitted.push(sub)
             await userinfo.save()
             return res.send({ isCorrect: true });
         }
     } catch (error) {
-        return res.status(500).send(error);
+        return res.status(500).send(error.stderr);
     }
 });
 
@@ -72,23 +72,24 @@ app.post('/profile', async (req, res) => {
     res.send(submissions)
 })
 
+//not used in this project
 app.post('/mysubproblem', async (req, res) => {
-    const user = await User.findById(req.body.ID)
+    const user = await User.findOne({ userid: req.body.userID })
     if (!user) {
         return res.status(404).send('user not found')
     }
     const submissions = await Submission.find({ user: user._id })
-    const mysub = submissions.filter((ele) => ele.problem == req.body.probID)
+    const mysub = submissions.filter((ele) => ele.problemName == req.body.problemName.split('-').join(' '))
     res.send(mysub)
 })
 
 app.post('/allsubproblem', async (req, res) => {
-    const user = await User.findById(req.body.ID)
+    const user = await User.findOne({ userid: req.body.userID })
     if (!user) {
         return res.status(404).send('user not found')
     }
-    const submissions = await Submission.find({ problem: req.body.probID })
-    res.send(submissions)
+    const submissions = await Submission.find({ problemName: req.body.problemName.split('-').join(' ') }).populate('user')
+    res.send(submissions.reverse())
 })
 
 

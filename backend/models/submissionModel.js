@@ -19,6 +19,10 @@ const submissionSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    problemName: {
+        type: String,
+        required: true
+    },
     verdict: {
         type: String,
         required: true

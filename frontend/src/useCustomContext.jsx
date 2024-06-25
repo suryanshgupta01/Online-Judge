@@ -7,7 +7,6 @@ const baseURL = 'http://localhost:4000'
 const CustomContext = createContext();
 const UseCustomContext = ({ children }) => {
     const [currentUser, setCurrentUser] = useState()
-    const [globalUser, setGlobalUser] = useState({})
     const [loading, setLoading] = useState(true)
     const [userID, setUserID] = useState(0)
 
@@ -16,15 +15,13 @@ const UseCustomContext = ({ children }) => {
         // setTimeout(() => {
         const namefinal = name1 || currentUser.displayName
         const emailfinal = email || currentUser.email
-        console.log(namefinal, emailfinal, userID)
-        console.log("in signup firebase with ", name1, email, password)
         try {
             axios.post(`${baseURL}/user/register`, {
                 name: namefinal,
                 userid: userID,
                 email: emailfinal
             })
-                .then(response => { console.log(response); setGlobalUser(response.data) })
+                .then(response => { console.log(response); })
                 .catch(error => console.log("error creating user in FirebaseDB"))
         } catch (err) {
             console.log("Failed creating user with firebase")
@@ -128,8 +125,6 @@ const UseCustomContext = ({ children }) => {
             resetPassword,
             updateEmail1,
             updatePassword1,
-            setGlobalUser,
-            globalUser,
             handleMicrosoft,
             handleTwitter,
             handleFacebook

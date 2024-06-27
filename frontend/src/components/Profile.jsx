@@ -231,7 +231,7 @@ const Profile = () => {
                                 {user?.problems_submitted?.map((problem) => (
                                     <tr>
                                         <td><Avatar1 info={problem} /></td>
-                                        <td>{problem.problemName?.substr(0, 10)}</td>
+                                        <td>{problem.problemName?.substr(0, 20)}</td>
                                         <td>{moment(new Date(problem.createdAt)).format('MMMM Do YYYY, h:mm a')}</td>
                                         <td>{problem.language}</td>
                                         <td>{problem.verdict.split('\n')[0]}</td>

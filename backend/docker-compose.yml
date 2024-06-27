@@ -1,0 +1,22 @@
+services:
+  api:
+    build: 
+      context: .
+      dockerfile: DockerfileAPI
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=${PORT}
+      - MONGO_URL=${MONGO_URL}
+      - SUBMISSION_PORT=${SUBMISSION_PORT}
+
+  compiler:
+    build: 
+      context: .
+      dockerfile: DockerfileCompiler
+    ports:
+      - "4500:4500"
+    environment:
+      - PORT=${PORT}
+      - MONGO_URL=${MONGO_URL}
+      - SUBMISSION_PORT=${SUBMISSION_PORT}

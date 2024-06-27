@@ -12,6 +12,9 @@ import Avatar1 from '../UI/Avatar';
 import moment from 'moment';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import CircularProgress from '@mui/material/CircularProgress';
+import ResizablePane from './ResizablePane';
+
 
 const MathExpression = ({ expression }) => {
     const html = katex.renderToString(expression, {
@@ -66,7 +69,11 @@ int main(){
     public static void main(String[] args) {
         System.out.println("Hello World");
     }
-}`
+}`,
+            "rb": `puts "Hello World"`,
+            "php": `<?php
+    echo "Hello World";
+?>`
         }
         codeRef.current?.editor?.setValue(sampleCode[lang])
     }
@@ -135,6 +142,34 @@ int main(){
         setMysubmission(mysub)
         setAllsubmission(data);
     }
+    const paneRef = useRef();
+    const [width, setWidth] = useState('50%'); // Initial width
+    const langMap = {
+        'cpp': 'C++',
+        'c': 'C',
+        'py': 'Python',
+        'java': 'Java',
+        'php': 'PHP',
+        'rb': 'Ruby'
+    };
+    const handleResize = (e) => {
+        const initialX = e.clientX;
+        const initialWidth = paneRef.current.offsetWidth
+        const handleMouseMove = (moveEvent) => {
+            const deltaX = moveEvent.clientX - initialX;
+            console.log(initialWidth, initialX);
+            const newWidth = Math.min(window.innerWidth / 3, Math.max(-1 * window.innerWidth / 3, initialWidth + deltaX)); // Prevent negative width
+            setWidth(`${newWidth / window.innerWidth * 100 + 50}%`);
+        };
+
+        const handleMouseUp = () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    };
     useEffect(() => {
         // getmysubmission()
         getallsubmission()
@@ -145,7 +180,7 @@ int main(){
     return (
         <>
             <div className={!isSmallScreen ? 'makerow' : 'makecol'}>
-                <div style={{ width: '45vw' }}>
+                <div style={{ width: width }}>
                     <Tabs style={{ textAlign: 'left' }} >
                         <TabList>
                             <Tab>Problem</Tab>
@@ -160,21 +195,19 @@ int main(){
                                     </h2>
                                     <select
                                         className="select-box border border-gray-300 rounded-lg py-1.5 px-4 mb-1 focus:outline-none focus:border-indigo-500"
-                                        onClick={(e) => handleLangChoice(e.target.value)}>
+                                        onClick={(e) => { handleLangChoice(e.target.value); setLang(e.target.value); }}>
                                         <option value='cpp'>C++</option>
                                         <option value='c'>C</option>
                                         <option value='py'>Python</option>
                                         <option value='java'>Java</option>
-                                        <option value='cs'>C#</option>
                                         <option value='php'>PHP</option>
                                         <option value='rb'>Ruby</option>
-                                        <option value='rs'>Rust</option>
                                     </select>
                                 </div>
                                 <br />
                                 <p><strong>Problem Statement :<br /></strong>
                                     {problem.question.split('$$').map((ele, ind, arr) => (
-                                        (ind === 0 || ind === arr.length - 1)
+                                        (ind % 2 == 0)
                                             ? ele
                                             : <MathExpression expression={ele} />
                                     ))}
@@ -210,7 +243,7 @@ int main(){
                                             <tr>
                                                 <td ><Avatar1 info={problem} /></td>
                                                 <td>{moment(new Date(problem.createdAt)).fromNow()}</td>
-                                                <td>{problem.language}</td>
+                                                <td>{langMap[problem.language]}</td>
                                                 <td style={{ backgroundColor: (problem.verdict != 'AC') ? 'red' : 'green' }}>{problem.verdict.split('\n')[0]}</td>
                                             </tr>
                                         ))}
@@ -234,9 +267,9 @@ int main(){
                                         {allsubmission?.map((problem) => (
                                             <tr>
                                                 <td ><Avatar1 info={problem} /></td>
-                                                <td >{problem.user?.name?.substr(0, 15)}</td>
+                                                <td >{problem.user?.name?.substr(0, 20)}</td>
                                                 <td>{moment(new Date(problem.createdAt)).fromNow()}</td>
-                                                <td>{problem.language}</td>
+                                                <td>{langMap[problem.language]}</td>
                                                 <td style={{ backgroundColor: (problem.verdict != 'AC') ? 'red' : 'green' }}>{problem.verdict.split('\n')[0]}</td>
                                             </tr>
                                         ))}
@@ -248,9 +281,11 @@ int main(){
 
                 </div>
 
-                <div className="gutter gutter-vertical" style={{ width: '6px', cursor: 'col-resize' }}></div>
-
-                <div style={{ width: '55vw' }}>
+                {/* <div className="gutter gutter-vertical" style={{ width: '6px', cursor: 'col-resize' }}></div> */}
+                <div ref={paneRef} onMouseDown={handleResize} style={{ cursor: 'ew-resize', backgroundColor: '#BCCBE9', justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
+                    <div>||</div>
+                </div>
+                <div style={{ width: (100 - width.split('%')[0]) + '%' }}>
                     <div>
                         <AceEditor
                             mode="javascript"
@@ -288,18 +323,21 @@ int main(){
                                     </textarea>
                                 </TabPanel>
                                 <TabPanel id="output">
-                                    <div>
+                                    <div>{loading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '20vh' }}><CircularProgress style={{ margin: 'auto' }} /></div> : <>
                                         {output.split('\n').map((item, index) => {
                                             return <p key={index} style={{ margin: '0' }}>{item}</p>
                                         })}
+                                    </>
+                                    }
                                     </div>
                                 </TabPanel>
                                 <TabPanel id="verdict">
-                                    <div style={{ color: 'red' }}>
+                                    {loading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '20vh' }}><CircularProgress style={{ margin: 'auto' }} /></div> : <>
                                         {verdict.split('\n').map((item, index) => {
                                             return <p key={index} style={{ margin: '0' }}>{item}</p>
                                         })}
-                                    </div>
+                                    </>
+                                    }
                                 </TabPanel>
                             </Tabs>
 

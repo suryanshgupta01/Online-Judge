@@ -100,7 +100,7 @@ function Contest() {
                                 {allcontestsubmission?.map((problem) => (
                                     <tr>
                                         <td ><Avatar1 info={problem} /></td>
-                                        <td >{problem.userName?.substr(0, 10)}</td>
+                                        <td >{problem.userName?.substr(0, 20)}</td>
                                         <td>{moment(new Date(problem.createdAt)).fromNow()}</td>
                                         <td>{problem.language}</td>
                                         <td style={{ backgroundColor: (problem.verdict != 'AC') ? 'red' : 'green' }}>{problem.verdict.split('\n')[0]}</td>

@@ -55,7 +55,7 @@ const Contests = () => {
                                     {moment(contest.start_time).format('MMMM Do YYYY, h:mm a')}
                                 </td>
                                 <td>
-                                    {parseInt(contest.duration / 60 - (new Date().getTime() - new Date(contest.start_time).getTime()) / 3600000)} : {parseInt(contest.duration - (new Date().getTime() - new Date(contest.start_time).getTime()) / 60000) % 60} hours
+                                    {parseInt(contest.duration / 60 - (new Date().getTime() - new Date(contest.start_time).getTime()) / 3600000)} : {parseInt(contest.duration - (new Date().getTime() - new Date(contest.start_time).getTime()) / 60000) % 60}
                                 </td>
                                 <td>
                                     {contest.leaderboard.length}

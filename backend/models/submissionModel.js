@@ -11,6 +11,10 @@ const submissionSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
+    contest:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Contest",
+    },
     code: {
         type: String,
         required: true

@@ -59,10 +59,10 @@ app.post('/run', async (req, res) => {
         const lang = req.body.lang;
         const code = req.body.code;
         const input = req.body.input;
-        const contestName = req.body.contestName.split('-').join(' ');
+        const contestName = req.body?.contestName;
         let contest = null;
         if (contestName) {
-            contest = await Contest.findOne({ title: contestName })
+            contest = await Contest.findOne({ title: contestName.split('-').join(' ') })
             if ((new Date(contest.start_time).getTime() + contest.duration * 60000) < (new Date().getTime()) || new Date(contest.start_time).getTime() > new Date().getTime()) {
                 contest = null
                 console.log("contest over or not started")
@@ -97,7 +97,6 @@ app.post('/run', async (req, res) => {
                 if (answer.trim() != output.trim()) {
                     problem.total_submissions = problem.total_submissions + 1
                     await problem.save()
-                    console.log("string ", contest?._id)
                     const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, 'WA on TC ' + (pass + 1) + '\nWrong TestCase: \n' + problem.allTCarr[pass] + '\nYour output:\n' + answer + '\nCorrect output:\n' + output)
                     userinfo.problems_submitted.push(sub)
                     await userinfo.save()

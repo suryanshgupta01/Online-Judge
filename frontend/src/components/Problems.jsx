@@ -25,7 +25,8 @@ const MathExpression = ({ expression }) => {
 };
 
 const baseURL = 'http://localhost:4000';
-const baseURLsubs = 'http://localhost:4500';
+// const baseURLsubs = 'http://localhost:4500';
+const baseURLsubs ="https://online-judge-1n4p.onrender.com"
 
 const Problems = () => {
     const [problem, setProblem] = useState(null);
@@ -93,7 +94,7 @@ int main(){
             }
             setLoading(true);
             const { data } = await axios.post(`${baseURLsubs}/submission/run`, {
-                lang, code: codeRef.current.editor.getValue(), isSubmit: (isSubmit == 1), userID: currentUser.uid, probID: problem._id, input: console1, contestName
+                lang, code: codeRef.current.editor.getValue(), isSubmit: (isSubmit == 1), userID: currentUser.uid, probID: problem._id, input: console1, contestName:contestName
             });
             console.log(data)
             setLoading(false);

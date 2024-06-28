@@ -44,7 +44,7 @@ app.get('/contests', async (req, res) => {
 
 app.get('/getcontest/:ID', async (req, res) => {
     try {
-        const contest = await Contest.findOne({ title: req.params.ID }).populate('problems');
+        const contest = await Contest.findOne({ title: req.params.ID }).populate(['problems','submissions']);
         res.send(contest);
     }
     catch (err) {

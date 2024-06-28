@@ -20,7 +20,7 @@ app.post('/create', async (req, res) => {
         if (oldprob) {
             return res.status(400).send('Problem already exists');
         }
-        const newProb = new Problem({...req.body,author:userAuth.name});
+        const newProb = new Problem({ ...req.body, author: userAuth.name });
         newProb.save();
         res.send(newProb);
     }
@@ -47,8 +47,11 @@ app.delete('/delete/:ID', async (req, res) => {
 
 app.get('/problemset', async (req, res) => {
     try {
-        const allproblems = await Problem.find({ 'hidden': false });
-        res.send(JSON.stringify(allproblems));
+        const allproblems = await Problem.find();
+        const visibleprobs = allproblems.filter((ele) =>
+            (new Date().getTime() > (new Date(ele.availableFrom).getTime() + ele.duration * 60000))
+        )
+        res.send(JSON.stringify(visibleprobs));
     } catch (err) {
         console.log("Failed to get problemset");
         res.status(500).send('Internal Server Error');
@@ -74,11 +77,11 @@ app.get('/problem/:title', async (req, res) => {
     try {
         const title = req.params.title;
         const newtitle = title.split('-').join(' ');
-        const details = await Problem.find({ 'title': newtitle });
-        if (!details || details.length === 0) {
+        const details = await Problem.findOne({ 'title': newtitle });
+        if (!details || new Date().getTime() < new Date(details.availableFrom).getTime()) {
             res.status(404).send('Problem not found');
         }
-        res.send(JSON.stringify(details[0]));
+        res.send(JSON.stringify(details));
     } catch (err) {
         console.log("error getting problem by title");
     }

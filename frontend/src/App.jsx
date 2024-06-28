@@ -51,6 +51,10 @@ const router = createBrowserRouter([
         element: <Contest />
       },
       {
+        path: 'contest/:ID/problem/:Pname',
+        element: <Problems />
+      },
+      {
         path: "profile/:name1",
         element: <Profile />
       },

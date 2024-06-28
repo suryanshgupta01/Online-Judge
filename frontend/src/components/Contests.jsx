@@ -50,7 +50,11 @@ const Contests = () => {
                         <>
                             <tr>
                                 <th scope="row">{index + 1}</th>
-                                <td>{contest.title}</td>
+                                <td>
+                                    <Link to={`/contest/${contest.title.split(' ').join('-')}`}>
+                                        {contest.title}
+                                    </Link>
+                                </td>
                                 <td>
                                     {moment(contest.start_time).format('MMMM Do YYYY, h:mm a')}
                                 </td>

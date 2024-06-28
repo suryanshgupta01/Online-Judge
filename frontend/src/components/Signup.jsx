@@ -151,7 +151,7 @@ const Signup = () => {
                         >
                             Sign Up
                         </Button>
-                        <Grid container display='flex' justifyContent='space-around' alignItems='center'>
+                        <Grid container display='flex' justifyContent='space-between' alignItems='center'>
                             <Button disabled={isLoading} onClick={() => handleGoogle()} variant="contained" color="error"><GoogleIcon /></Button>
                             <Button disabled={isLoading} onClick={() => handleMicrosoft()} variant="contained" color="success"><MicrosoftIcon /></Button>
                             <Button disabled={isLoading} onClick={() => handleGithub()} variant="contained" style={{ backgroundColor: 'black', height: '2.3rem' }}><i style={{ fontSize: '1.4rem' }} class="bi bi-github"></i></Button>

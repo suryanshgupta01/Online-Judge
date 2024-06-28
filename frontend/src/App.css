@@ -38,6 +38,7 @@ h1 {
 
 .wrapper {
     width: 70%;
+    height: 70vh;
     margin: auto;
     background-color: white;
     border-radius: 10px;
@@ -99,7 +100,7 @@ p {
 
 
 
-.content {
+.content1 {
     padding: 0px;
     /* width: 70vw; */
     height: 0;
@@ -110,8 +111,8 @@ p {
     background-color: white;
 }
 
-.content.active {
-    height: 200px;
+.content1.active {
+    height: 60vh;
     /* Set a max-height large enough to fit the content */
 }
 

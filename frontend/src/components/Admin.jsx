@@ -26,7 +26,8 @@ function Admin() {
     const [isContest, setisContest] = useState(false)
     const [contestProblemIdarr, setContestProblemIdarr] = useState([])
     const [contestTitle, setContestTitle] = useState('')
-    const [startDate, setStartDate] = useState(new Date())
+    const [startDate, setStartDate] = useState('')
+    console.log(startDate)
     const [duration, setDuration] = useState('')
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -34,8 +35,12 @@ function Admin() {
         const allCorrectSolnArr = allCorrectSoln.split('\n\n')
         setSuccessMsg('')
         setErrorMsg('')
+        if (isContest && (!duration || !startDate)) {
+            setErrorMsg("Duration and start date is required")
+            return
+        }
         axios.post(`${baseURL}/problem/create`, {
-            userid: currentUser.uid, title, hidden: isContest, question, constraints, solved_TC_input, solved_TC_output,
+            userid: currentUser.uid, title, availableFrom: isContest ? startDate : new Date(), duration: isContest ? duration : -1, question, constraints, solved_TC_input, solved_TC_output,
             allTCarr, allCorrectSolnArr, rating, inputFormat, outputFormat, submitted_by: []
         })
             .then((res) => {
@@ -231,7 +236,7 @@ function Admin() {
                             onChange={(e) => setSolvedTCInput(e.target.value)}
                             value={solved_TC_input}
                             label="Solved Test Case Input"
-                            id="solved_TC_input"    
+                            id="solved_TC_input"
                             multiline
                             rows={2}
                         />

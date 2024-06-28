@@ -11,7 +11,7 @@ const submissionSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
-    contest:{
+    contest: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Contest",
     },
@@ -24,6 +24,10 @@ const submissionSchema = new mongoose.Schema({
         required: true
     },
     problemName: {
+        type: String,
+        required: true
+    },
+    userName: {
         type: String,
         required: true
     },

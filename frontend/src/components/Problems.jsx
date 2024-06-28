@@ -29,7 +29,8 @@ const baseURLsubs = 'http://localhost:4500';
 
 const Problems = () => {
     const [problem, setProblem] = useState(null);
-    const { Pname } = useParams()
+    const { Pname, ID: contestName } = useParams()
+    console.log(Pname, contestName)
     const { currentUser, globalUser } = useUserContext();
     const [console1, setConsole1] = useState('');
     const codeRef = useRef(null);
@@ -86,13 +87,13 @@ int main(){
         setOutput('');
         setVerdict('');
         try {
-            if (!codeRef.current.editor.getValue() || !console1) {
-                setErrorMsg("Code or console1 is empty");
+            if (isSubmit == 2 && (!codeRef.current.editor.getValue() || !console1)) {
+                setErrorMsg("Code or console is empty");
                 return;
             }
             setLoading(true);
             const { data } = await axios.post(`${baseURLsubs}/submission/run`, {
-                lang, code: codeRef.current.editor.getValue(), isSubmit: (isSubmit == 1), userID: currentUser.uid, probID: problem._id, input: console1
+                lang, code: codeRef.current.editor.getValue(), isSubmit: (isSubmit == 1), userID: currentUser.uid, probID: problem._id, input: console1, contestName
             });
             console.log(data)
             setLoading(false);

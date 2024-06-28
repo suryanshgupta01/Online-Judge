@@ -49,11 +49,14 @@ const problemSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    hidden: {
-        type: Boolean,
-        default: false
+    availableFrom: {
+        type: Date,
+        required: true
+    },
+    duration: {
+        type: Number,
+        required: true
     }
-
 }, {
     timestamps: true
 });

@@ -17,19 +17,27 @@ const contestSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    submissions: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Submission"
+    }],
     leaderboard: [{
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+        userName: {
+            type: String,
+            required: true
         },
-        score: {
+        penalty: {
             type: Number,
             default: 0
         },
-        rank: {
+        numTried: [{
             type: Number,
             default: 0
-        }
+        }],
+        isAccepted: [{
+            type: Boolean,
+            default: false
+        }]
     }]
 }, {
     timestamps: true

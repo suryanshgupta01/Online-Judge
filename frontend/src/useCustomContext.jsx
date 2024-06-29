@@ -3,7 +3,7 @@ import { auth } from './firebase'
 import { browserPopupRedirectResolver, OAuthProvider, GithubAuthProvider, GoogleAuthProvider, signInWithPopup, TwitterAuthProvider, FacebookAuthProvider } from 'firebase/auth'
 import axios from 'axios'
 
-const baseURL = 'http://localhost:4000'
+const baseURL = import.meta.env.VITE_baseURL
 const CustomContext = createContext();
 const UseCustomContext = ({ children }) => {
     const [currentUser, setCurrentUser] = useState()

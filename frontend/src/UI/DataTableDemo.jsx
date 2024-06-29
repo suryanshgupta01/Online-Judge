@@ -212,7 +212,7 @@ export default function DataTableDemo({ problems }) {
 
     const navigate = useNavigate()
     const handleClick = (event, id) => {
-        navigate(`/problem/${rows[id].title.split(' ').join('-')}`);
+        navigate(`/problem/${event.target.textContent.split(' ').join('-')}`);
     };
 
     const handleChangePage = (event, newPage) => {

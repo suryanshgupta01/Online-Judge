@@ -23,7 +23,7 @@ function Navbar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [globalUser, setGlobalUser] = React.useState({})
-    const baseURL = "http://localhost:4000"
+    const baseURL = "https://online-judge-2.onrender.com"
     useEffect(() => {
         if (currentUser) {
             axios.post(`${baseURL}/user/userinfo`, {

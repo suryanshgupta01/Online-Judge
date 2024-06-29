@@ -18,7 +18,7 @@ import { useUserContext } from '../useCustomContext';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment'
 import Avatar1 from '../UI/Avatar';
-const baseURL = 'http://localhost:4000';
+const baseURL = import.meta.env.VITE_baseURL;
 const Profile = () => {
     const { currentUser, deleteUser } = useUserContext()
     const navigate = useNavigate();
@@ -29,6 +29,14 @@ const Profile = () => {
     const [errormessage, setErrormessage] = useState('');
     const [name2, setName2] = useState('');
     const [email2, setEmail2] = useState('');
+    const langMap = {
+        'cpp': 'C++',
+        'c': 'C',
+        'py': 'Python',
+        'java': 'Java',
+        'php': 'PHP',
+        'rb': 'Ruby'
+    };
     const handleSubmit = (e) => {
         e.preventDefault();
         setSuccessmessage('');
@@ -133,88 +141,88 @@ const Profile = () => {
                     </div>
                 </TabPanel>
                 {(user.userid == currentUser.uid) ?
-                <TabPanel >
-                    <ThemeProvider theme={defaultTheme} >
-                        <Container component="main" maxWidth="xs" >
-                            <CssBaseline />
-                            <Box
-                                sx={{
-                                    marginTop: 8,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                                    <input type="file" id="file" onChange={(e) => handleFileChange(e)} style={{ display: 'none' }} accept="image/*" />
-                                    <label htmlFor="file">
-                                        <img src={user.profile_pic} alt="Profile" style={{ width: '48px', right: '0' }} />
-                                    </label>
-                                </Avatar>
-                                <div style={{ position: 'relative', left: '5%', top: '-25px' }}>🖋️</div>
-                                <Typography component="h1" variant="h5">
-                                    Update profile
-                                </Typography>
-                                <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-                                    {successmessage && <Alert variant="filled" severity="success">
-                                        {successmessage}
-                                    </Alert>}
-                                    {errormessage && <Alert variant="filled" severity="error">
-                                        {errormessage}
-                                    </Alert>}
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12} >
-                                            <TextField
-                                                autoComplete="given-name"
-                                                name="firstName"
-                                                required
-                                                fullWidth
-                                                defaultValue={name2}
-                                                id="firstName"
-                                                label="UserName"
-                                                autoFocus
-                                                onChange={(e) => setName2(e.target.value)}
-                                            />
+                    <TabPanel >
+                        <ThemeProvider theme={defaultTheme} >
+                            <Container component="main" maxWidth="xs" >
+                                <CssBaseline />
+                                <Box
+                                    sx={{
+                                        marginTop: 8,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                                        <input type="file" id="file" onChange={(e) => handleFileChange(e)} style={{ display: 'none' }} accept="image/*" />
+                                        <label htmlFor="file">
+                                            <img src={user.profile_pic} alt="Profile" style={{ width: '48px', right: '0' }} />
+                                        </label>
+                                    </Avatar>
+                                    <div style={{ position: 'relative', left: '5%', top: '-25px' }}>🖋️</div>
+                                    <Typography component="h1" variant="h5">
+                                        Update profile
+                                    </Typography>
+                                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                                        {successmessage && <Alert variant="filled" severity="success">
+                                            {successmessage}
+                                        </Alert>}
+                                        {errormessage && <Alert variant="filled" severity="error">
+                                            {errormessage}
+                                        </Alert>}
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} >
+                                                <TextField
+                                                    autoComplete="given-name"
+                                                    name="firstName"
+                                                    required
+                                                    fullWidth
+                                                    defaultValue={name2}
+                                                    id="firstName"
+                                                    label="UserName"
+                                                    autoFocus
+                                                    onChange={(e) => setName2(e.target.value)}
+                                                />
+                                            </Grid>
+
+                                            <Grid item xs={12}>
+                                                <TextField
+                                                    required
+                                                    fullWidth
+                                                    defaultValue={email2}
+                                                    id="email"
+                                                    label="Email Address"
+                                                    name="email"
+                                                    autoComplete="email"
+                                                    onChange={(e) => setEmail2(e.target.value)}
+                                                />
+                                            </Grid>
+
+
                                         </Grid>
-
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                required
-                                                fullWidth
-                                                defaultValue={email2}
-                                                id="email"
-                                                label="Email Address"
-                                                name="email"
-                                                autoComplete="email"
-                                                onChange={(e) => setEmail2(e.target.value)}
-                                            />
+                                        <Grid container justifyContent="flex-end">
+                                            <Grid item>
+                                                <div onClick={handleDelete} style={{ cursor: 'pointer', color: 'red' }}>
+                                                    Delete account
+                                                </div>
+                                            </Grid>
                                         </Grid>
+                                        <Button
+                                            type="submit"
+                                            fullWidth
+                                            variant="contained"
+                                            sx={{ mt: 3, mb: 2 }}
+                                        >
+                                            Update user
+                                        </Button>
 
 
-                                    </Grid>
-                                    <Grid container justifyContent="flex-end">
-                                        <Grid item>
-                                            <div onClick={handleDelete} style={{ cursor: 'pointer', color: 'red' }}>
-                                                Delete account
-                                            </div>
-                                        </Grid>
-                                    </Grid>
-                                    <Button
-                                        type="submit"
-                                        fullWidth
-                                        variant="contained"
-                                        sx={{ mt: 3, mb: 2 }}
-                                    >
-                                        Update user
-                                    </Button>
-
-
+                                    </Box>
                                 </Box>
-                            </Box>
-                        </Container>
-                    </ThemeProvider>
-                </TabPanel>
-                :null}
+                            </Container>
+                        </ThemeProvider>
+                    </TabPanel>
+                    : null}
                 <TabPanel>
                     <div style={{ maxHeight: '80vh', overflowY: 'auto' }}>
                         <table className="table table-hover " style={{ marginBottom: '2rem' }}>
@@ -233,7 +241,7 @@ const Profile = () => {
                                         <td><Avatar1 info={problem} /></td>
                                         <td>{problem.problemName?.substr(0, 20)}</td>
                                         <td>{moment(new Date(problem.createdAt)).format('MMMM Do YYYY, h:mm a')}</td>
-                                        <td>{problem.language}</td>
+                                        <td>{langMap[problem.language]}</td>
                                         <td>{problem.verdict.split('\n')[0]}</td>
                                     </tr>
                                 ))}

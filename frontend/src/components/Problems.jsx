@@ -14,24 +14,24 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import CircularProgress from '@mui/material/CircularProgress';
 import ResizablePane from './ResizablePane';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 
 const MathExpression = ({ expression }) => {
     const html = katex.renderToString(expression, {
         throwOnError: false
     });
-
     return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
-const baseURL = 'http://localhost:4000';
-// const baseURLsubs = 'http://localhost:4500';
-const baseURLsubs ="https://online-judge-1n4p.onrender.com"
+const baseURL = import.meta.env.VITE_baseURL;
+const baseURLsubs = import.meta.env.VITE_baseURLsubs
+// const baseURLsubs = "https://online-judge-1n4p.onrender.com"
 
 const Problems = () => {
     const [problem, setProblem] = useState(null);
     const { Pname, ID: contestName } = useParams()
-    console.log(Pname, contestName)
     const { currentUser, globalUser } = useUserContext();
     const [console1, setConsole1] = useState('');
     const codeRef = useRef(null);
@@ -87,6 +87,9 @@ int main(){
         setErrorMsg('');
         setOutput('');
         setVerdict('');
+        if (!isActive)
+            setIsActive(true);
+        // verdictRef.current.click();
         try {
             if (isSubmit == 2 && (!codeRef.current.editor.getValue() || !console1)) {
                 setErrorMsg("Code or console is empty");
@@ -94,10 +97,9 @@ int main(){
             }
             setLoading(true);
             const { data } = await axios.post(`${baseURLsubs}/submission/run`, {
-                lang, code: codeRef.current.editor.getValue(), isSubmit: (isSubmit == 1), userID: currentUser.uid, probID: problem._id, input: console1, contestName:contestName
+                lang, code: codeRef.current.editor.getValue(), isSubmit: (isSubmit == 1), userID: currentUser.uid, probID: problem._id, input: console1, contestName: contestName
             });
             console.log(data)
-            setLoading(false);
             if (isSubmit == 1)
                 if (data.isCorrect) {
                     setSuccessMsg("Accepted");
@@ -114,6 +116,7 @@ int main(){
             else setVerdict(error.response.data)
             console.log("inside error while running code", error.response.data);
         }
+        setLoading(false);
     }
     const handleSubmit2 = async () => {
         handleSubmit(1);
@@ -159,7 +162,6 @@ int main(){
         const initialWidth = paneRef.current.offsetWidth
         const handleMouseMove = (moveEvent) => {
             const deltaX = moveEvent.clientX - initialX;
-            console.log(initialWidth, initialX);
             const newWidth = Math.min(window.innerWidth / 3, Math.max(-1 * window.innerWidth / 3, initialWidth + deltaX)); // Prevent negative width
             setWidth(`${newWidth / window.innerWidth * 100 + 50}%`);
         };
@@ -246,7 +248,7 @@ int main(){
                                                 <td ><Avatar1 info={problem} /></td>
                                                 <td>{moment(new Date(problem.createdAt)).fromNow()}</td>
                                                 <td>{langMap[problem.language]}</td>
-                                                <td style={{ backgroundColor: (problem.verdict != 'AC') ? 'red' : 'green' }}>{problem.verdict.split('\n')[0]}</td>
+                                                <td style={{ backgroundColor: (problem.verdict == 'Accepted\n') ? '#C3E6CB' : '#F5C6CB' }}>{problem.verdict.split('\n')[0]}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -272,7 +274,7 @@ int main(){
                                                 <td >{problem.user?.name?.substr(0, 20)}</td>
                                                 <td>{moment(new Date(problem.createdAt)).fromNow()}</td>
                                                 <td>{langMap[problem.language]}</td>
-                                                <td style={{ backgroundColor: (problem.verdict != 'AC') ? 'red' : 'green' }}>{problem.verdict.split('\n')[0]}</td>
+                                                <td style={{ backgroundColor: (problem.verdict == 'Accepted\n') ? '#C3E6CB' : '#F5C6CB' }}>{problem.verdict.split('\n')[0]}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -315,9 +317,9 @@ int main(){
                         <div className={`content ${isActive ? 'active' : ''} `}>
                             <Tabs style={{ textAlign: 'left' }} >
                                 <TabList>
-                                    <Tab>Input</Tab>
-                                    <Tab>Output</Tab>
-                                    <Tab>Verdict</Tab>
+                                    <Tab >Input</Tab>
+                                    <Tab >Output</Tab>
+                                    <Tab >Verdict</Tab>
                                 </TabList>
                                 <TabPanel id="console1">
                                     <textarea rows={4} style={{ width: '100%' }} value={console1} onChange={(e) => setConsole1(e.target.value)}>
@@ -345,14 +347,14 @@ int main(){
 
                         </div>
                         <div className={`collapsible ${isActive ? 'active' : ''} `} >
-                            <button onClick={() => setIsActive(!isActive)} type="button" className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
-                                Console<i className="fa-solid fa-terminal ml-2"></i>
+                            <button onClick={() => setIsActive(!isActive)} type="button" style={{ width: '31%' }} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                Console <i className="fa-solid fa-terminal ml-2"></i>
                             </button>
-                            <button onClick={() => handleSubmit()} type="button" disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
-                                Run<i className="fa-solid fa-play ml-2"></i>
+                            <button onClick={() => handleSubmit()} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                {!loading ? <>Run <i className="fa-solid fa-play ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
                             </button>
-                            <button onClick={handleSubmit2} type="button" disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
-                                Submit<i className="fa-solid fa-circle-check ml-2"></i>
+                            <button onClick={handleSubmit2} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                {!loading ? <>Submit <i className="fa-solid fa-circle-check ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
                             </button>
                         </div>
                     </div>

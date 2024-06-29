@@ -6,7 +6,7 @@ import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import { useUserContext } from '../useCustomContext';
 
-const baseURL = 'http://localhost:4000'
+const baseURL = import.meta.env.VITE_baseURL
 function Admin() {
     const { currentUser } = useUserContext()
     const [title, setTitle] = useState('')
@@ -98,7 +98,7 @@ function Admin() {
         })
     }
     const [globalUser, setGlobalUser] = React.useState({})
-    const baseURL = "http://localhost:4000"
+    const baseURL = "https://online-judge-2.onrender.com"
     useEffect(() => {
         if (currentUser) {
             axios.post(`${baseURL}/user/userinfo`, {

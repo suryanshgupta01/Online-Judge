@@ -23,7 +23,7 @@ const createSubmission = async (problem, problemName, contestID, username, user,
             if (ele.userName == username) {
                 ispresent = 1
                 ele.numTried[i] = ele.numTried[i] + 1;
-                if (verdict == 'AC' || ele.isAccepted[i] == true) {
+                if (verdict == 'Accepted' || ele.isAccepted[i] == true) {
                     ele.isAccepted[i] = true;
                 } else ele.penalty = ele.penalty + 1;
             }
@@ -34,7 +34,7 @@ const createSubmission = async (problem, problemName, contestID, username, user,
         if (ispresent == 0) {
             newleaderboard.push({ userName: username, numTried: new Array(len).fill(0), isAccepted: new Array(len).fill(false) })
             newleaderboard[newleaderboard.length - 1].numTried[i] = 1;
-            if (verdict == 'AC') {
+            if (verdict == 'Accepted') {
                 newleaderboard[newleaderboard.length - 1].isAccepted[i] = true;
             }
         }
@@ -62,23 +62,29 @@ app.post('/run', async (req, res) => {
         const contestName = req.body?.contestName;
         let contest = null;
         if (contestName) {
-            contest = await Contest.findOne({ title: contestName.split('-').join(' ') })
-            if ((new Date(contest.start_time).getTime() + contest.duration * 60000) < (new Date().getTime()) || new Date(contest.start_time).getTime() > new Date().getTime()) {
-                contest = null
-                console.log("contest over or not started")
+            try {
+                contest = await Contest.findOne({ title: contestName.split('-').join(' ') })
+                if ((new Date(contest?.start_time).getTime() + contest?.duration * 60000) < (new Date().getTime()) || new Date(contest?.start_time).getTime() > new Date().getTime()) {
+                    contest = null
+                    // console.log("contest over or not started")
+                }
+            } catch (err) {
+                console.log("contest not found", err)
+                res.status(404).send('contest not found');
+                return
             }
         }
         if (!req.body.lang || !req.body.code || !req.body.probID || !req.body.userID) {
-            res.status(400).send('Information missing while running code');
+            res.status(400).send('Information missing while running code'); return
         }
         const isSubmit = req.body.isSubmit || false
         const userinfo = await User.findOne({ userid: req.body.userID })
         if (!userinfo) {
-            res.status(404).send('unauthorized user');
+            res.status(404).send('unauthorized user'); return
         }
         const problem = await Problem.findById(req.body.probID)
         if (!problem) {
-            res.status(404).send('problem not found')
+            res.status(404).send('problem not found'); return
         }
 
         if (!isSubmit) {
@@ -97,7 +103,7 @@ app.post('/run', async (req, res) => {
                 if (answer.trim() != output.trim()) {
                     problem.total_submissions = problem.total_submissions + 1
                     await problem.save()
-                    const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, 'WA on TC ' + (pass + 1) + '\nWrong TestCase: \n' + problem.allTCarr[pass] + '\nYour output:\n' + answer + '\nCorrect output:\n' + output)
+                    const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, 'Wrong Answer on TC ' + (pass + 1) + '\nWrong TestCase: \n' + problem.allTCarr[pass] + '\nYour output:\n' + answer + '\nCorrect output:\n' + output)
                     userinfo.problems_submitted.push(sub)
                     await userinfo.save()
                     return res.send({ wrongTC: problem.allTCarr[pass], Wooutput: answer, Coutput: output, pass, isCorrect: false });
@@ -106,13 +112,52 @@ app.post('/run', async (req, res) => {
             problem.total_accepted = problem.total_accepted + 1
             problem.total_submissions = problem.total_submissions + 1
             await problem.save()
-            const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, 'AC')
+            const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, 'Accepted\n')
             userinfo.problems_submitted.push(sub)
             await userinfo.save()
             return res.send({ isCorrect: true });
         }
     } catch (error) {
-        return res.status(500).send(error.stderr);
+        const isSubmit = req.body.isSubmit || false
+        const userinfo = await User.findOne({ userid: req.body.userID })
+        if (!userinfo) {
+            res.status(404).send('unauthorized user');
+        }
+        let err = error.stderr
+        if (err.includes('_' + userinfo.name + '.')) {
+            err = 'Compilation Error \n' + err
+        } else {
+            err = 'Segmentation fault \n' + err
+        }
+        if (isSubmit) {
+            const lang = req.body.lang;
+            const code = req.body.code;
+            const input = req.body.input;
+            const contestName = req.body?.contestName;
+            let contest = null;
+            if (contestName) {
+                try {
+                    contest = await Contest.findOne({ title: contestName.split('-').join(' ') })
+                    if ((new Date(contest?.start_time).getTime() + contest?.duration * 60000) < (new Date().getTime()) || new Date(contest?.start_time).getTime() > new Date().getTime()) {
+                        contest = null
+                        // console.log("contest over or not started")
+                    }
+                } catch (err) {
+                    console.log("contest not found", err)
+                }
+            }
+            const problem = await Problem.findById(req.body.probID)
+            if (!problem) {
+                res.status(404).send('problem not found'); return
+            }
+
+            problem.total_submissions = problem.total_submissions + 1
+            await problem.save()
+            const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, err)
+            userinfo.problems_submitted.push(sub)
+            await userinfo.save()
+        }
+        return res.status(500).send(err);
     }
 });
 

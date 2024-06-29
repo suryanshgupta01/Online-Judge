@@ -20,7 +20,7 @@ import { useUserContext } from '../useCustomContext'
 import { auth } from '../firebase'
 import { Link, useNavigate } from 'react-router-dom'
 import { GoogleAuthProvider, signInWithRedirect, GithubAuthProvider, browserPopupRedirectResolver, getRedirectResult } from 'firebase/auth'
-const baseURL = 'http://localhost:4000'
+const baseURL = import.meta.env.VITE_baseURL
 
 const Signin = () => {
     const { currentUser, login, deleteUser, signup, logout, handleGoogle, handleGithub, handleMicrosoft, handleTwitter, handleFacebook } = useUserContext()

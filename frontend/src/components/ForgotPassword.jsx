@@ -15,7 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Snackbar from '@mui/material/Snackbar';
 import React, { useState, useEffect, useContext } from 'react'
 import { useUserContext } from '../useCustomContext'
-const baseURL = 'http://localhost:4000'
+const baseURL = import.meta.env.VITE_baseURL
 
 function ForgotPassword() {
     const { resetPassword } = useUserContext()
@@ -24,7 +24,7 @@ function ForgotPassword() {
     const [successmessage, setSuccessMessage] = useState('')
     const [errormessage, setErrorMessage] = useState('')
     const handleSubmit = async () => {
-        if(email===''){return setErrorMessage("Please enter your email")}
+        if (email === '') { return setErrorMessage("Please enter your email") }
         setSuccessMessage("Please check your inbox for further instructions")
         await resetPassword(email)
     }

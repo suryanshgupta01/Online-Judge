@@ -3,10 +3,18 @@ import moment from 'moment'
 import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Avatar1 from '../UI/Avatar'
-const baseURL = 'http://localhost:4000'
+const baseURL = 'https://online-judge-2.onrender.com'
 function Contest() {
     const { ID } = useParams()
     const [contest, setContest] = useState({})
+    const langMap = {
+        'cpp': 'C++',
+        'c': 'C',
+        'py': 'Python',
+        'java': 'Java',
+        'php': 'PHP',
+        'rb': 'Ruby'
+    };
     useEffect(() => {
         axios.get(`${baseURL}/contest/getcontest/${ID.split('-').join(' ')}`)
             .then(data => {
@@ -41,14 +49,16 @@ function Contest() {
     const timeremain = Math.floor((new Date(contest.start_time).getTime() + contest.duration * 60000 - new Date().getTime()) / 1000)
     return (
         <div>
-            <div className='makerow' style={{ justifyContent: 'space-between', paddingLeft: '14rem', paddingRight: '14rem' }}>
+            <div className='makerow' style={{ justifyContent: 'space-between', paddingLeft: '14rem', paddingRight: '14rem', marginTop: '0.5rem' }}>
 
                 <h1>{contest.title}</h1>
                 <div>
-                    <div>
-                        Time remaining:
-                    </div>
-                    <div><b>{Math.floor(timeremain / 60)}:{timeremain % 60}</b></div>
+                    {timeremain > 0 &&
+                        <div>
+                            Time remaining:
+                        </div>
+                    }
+                    <div><b>{timeremain > 0 ? `${Math.floor(timeremain / 60)}:${timeremain % 60}` : <h3>Contest ended</h3>}</b></div>
                 </div>
             </div>
             <div className="wrapper">
@@ -110,8 +120,8 @@ function Contest() {
                                     <tr>
                                         <td >{problem.userName?.substr(0, 20)}</td>
                                         <td>{moment(new Date(problem.createdAt)).fromNow()}</td>
-                                        <td>{problem.language}</td>
-                                        <td style={{ backgroundColor: (problem.verdict != 'AC') ? 'red' : 'green' }}>{problem.verdict?.split('\n')[0]}</td>
+                                        <td>{langMap[problem.language]}</td>
+                                        <td style={{ backgroundColor: (problem.verdict == 'Accepted\n') ? '#C3E6CB' : '#F5C6CB' }}>{problem.verdict?.split('\n')[0]}</td>
                                     </tr>
                                 ))}
                             </tbody>

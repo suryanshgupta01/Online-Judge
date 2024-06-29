@@ -5,7 +5,7 @@ import 'react-tabs/style/react-tabs.css';
 import axios from 'axios';
 import DataTableDemo from '../UI/DataTableDemo';
 
-const baseURL = 'http://localhost:4000';
+const baseURL = import.meta.env.VITE_baseURL;
 
 const ProblemSet = () => {
     const [problemset, setProblemset] = useState([]);

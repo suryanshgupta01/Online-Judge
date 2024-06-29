@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react'
 import { useUserContext } from '../useCustomContext'
 import moment from 'moment'
 import { Link } from 'react-router-dom'
-const baseURL = 'http://localhost:4000'
+const baseURL = import.meta.env.VITE_baseURL
 
 const Contests = () => {
     const [contests, setContests] = useState([])

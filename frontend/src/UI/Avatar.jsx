@@ -50,7 +50,7 @@ export default function Avatar1({ info }) {
                         <ModalDialog
                             sx={{
                                 opacity: 0,
-                                width: '80vw', 
+                                width: '80vw',
                                 transition: `opacity 300ms`,
                                 ...{
                                     entering: { opacity: 1 },
@@ -58,9 +58,10 @@ export default function Avatar1({ info }) {
                                 }[state],
                             }}
                         >
-                            <DialogTitle>{Title[info.verdict.split(' ')[0]]}</DialogTitle>
+                            <DialogTitle>{info.verdict.split('\n')[0]}</DialogTitle>
                             <div style={{ maxHeight: '200px', overflow: 'auto' }}>
-                                {info.verdict != 'AC' && info.verdict.split('\n').map((item, index) => {
+                                {info.verdict.split('\n').map((item, index) => {
+                                    if (index == 0) return null
                                     return <p key={index} style={{ margin: '0' }}>{item}</p>
                                 })}
                             </div>

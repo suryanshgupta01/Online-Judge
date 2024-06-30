@@ -27,7 +27,6 @@ const MathExpression = ({ expression }) => {
 
 const baseURL = import.meta.env.VITE_baseURL;
 const baseURLsubs = import.meta.env.VITE_baseURLsubs
-// const baseURLsubs = "https://online-judge-1n4p.onrender.com"
 
 const Problems = () => {
     const [problem, setProblem] = useState(null);

@@ -27,7 +27,6 @@ function Admin() {
     const [contestProblemIdarr, setContestProblemIdarr] = useState([])
     const [contestTitle, setContestTitle] = useState('')
     const [startDate, setStartDate] = useState('')
-    console.log(startDate)
     const [duration, setDuration] = useState('')
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -40,7 +39,7 @@ function Admin() {
             return
         }
         axios.post(`${baseURL}/problem/create`, {
-            userid: currentUser.uid, title, availableFrom: isContest ? startDate : new Date(), duration: isContest ? duration : -1, question, constraints, solved_TC_input, solved_TC_output,
+            userid: currentUser.uid, title, availableFrom: isContest ? new Date(startDate) : new Date(), duration: isContest ? duration : -1, question, constraints, solved_TC_input, solved_TC_output,
             allTCarr, allCorrectSolnArr, rating, inputFormat, outputFormat, submitted_by: []
         })
             .then((res) => {
@@ -64,7 +63,7 @@ function Admin() {
                 console.log(err)
                 setErrorMsg('Error creating problem')
             })
-        console.log(title, question, constraints, solved_TC_input, solved_TC_output, allTCarr, allCorrectSolnArr, rating, inputFormat, outputFormat)
+
     }
     const handleContestSubmit = (e) => {
         if (title.trim() != '') {
@@ -79,7 +78,6 @@ function Admin() {
             return
         }
 
-        console.log(contestTitle, new Date(startDate), duration, contestProblemIdarr, currentUser.uid)
         axios.post(`${baseURL}/contest/create`, {
             title: contestTitle,
             start_time: new Date(startDate),
@@ -98,17 +96,16 @@ function Admin() {
         })
     }
     const [globalUser, setGlobalUser] = React.useState({})
-    const baseURL = "https://online-judge-2.onrender.com"
     useEffect(() => {
         if (currentUser) {
             axios.post(`${baseURL}/user/userinfo`, {
                 "uid": currentUser.uid
             }).then((res) => {
                 setGlobalUser(res.data)
+                console.log(res.data)
             })
         }
     }, [currentUser]);
-    console.log(globalUser)
     if (globalUser && !globalUser.isAdmin) {
         return <>Access Denied</>
     }

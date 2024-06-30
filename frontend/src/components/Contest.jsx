@@ -3,7 +3,7 @@ import moment from 'moment'
 import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Avatar1 from '../UI/Avatar'
-const baseURL = 'https://online-judge-2.onrender.com'
+const baseURL = import.meta.env.VITE_baseURL
 function Contest() {
     const { ID } = useParams()
     const [contest, setContest] = useState({})
@@ -86,7 +86,7 @@ function Contest() {
                                             <tr>
                                                 <th scope="row">{index + 1}</th>
                                                 <td>
-                                                    <Link to={`problem/${question.title.split(' ').join('-')}`}>
+                                                    <Link to={`problem/${question.title.split(' ').join('-')}`} className='links'>
                                                         {question.title}
                                                     </Link>
                                                 </td>
@@ -131,6 +131,7 @@ function Contest() {
                         <table className="table table-hover table-striped" >
                             <thead className='table-dark'>
                                 <tr>
+                                    <th scope="col">Rank</th>
                                     <th scope="col">UserName</th>
                                     <th scope="col">Penalty</th>
                                     <th scope="col">Score</th>
@@ -141,8 +142,9 @@ function Contest() {
 
                             </thead>
                             <tbody>
-                                {contest.leaderboard?.map((user) => (
+                                {contest.leaderboard?.map((user,ind) => (
                                     <tr>
+                                        <td>{ind+1}</td>
                                         <td >{user.userName?.substr(0, 20)}</td>
                                         <td>{user.penalty}</td>
                                         <td>{parseFloat((user?.isAccepted?.filter(submission => submission).length) / (user.isAccepted?.length) * 100).toFixed(2)}%</td>

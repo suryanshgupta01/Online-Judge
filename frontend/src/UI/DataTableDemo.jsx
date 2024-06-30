@@ -62,7 +62,7 @@ const headCells = [
         id: 'rating',
         numeric: true,
         disablePadding: false,
-        label: 'rating',
+        label: 'Rating',
     },
     {
         id: 'accuracy',
@@ -74,13 +74,7 @@ const headCells = [
         id: 'total_accepted',
         numeric: true,
         disablePadding: false,
-        label: 'Total_accepted',
-    },
-    {
-        id: 'status',
-        numeric: true,
-        disablePadding: false,
-        label: 'Status',
+        label: 'Total Accepted',
     }
 ];
 
@@ -167,11 +161,11 @@ function EnhancedTableToolbar(props) {
             ) : (
                 <Typography
                     sx={{ flex: '1 1 100%' }}
-                    variant="h6"
+                    variant="h3"
                     id="tableTitle"
                     component="div"
                 >
-                    ProblemSet
+                    Problemset
                 </Typography>
             )}
 
@@ -212,7 +206,7 @@ export default function DataTableDemo({ problems }) {
 
     const navigate = useNavigate()
     const handleClick = (event, id) => {
-        navigate(`/problem/${event.target.textContent.split(' ').join('-')}`);
+        navigate(`/problem/${visibleRows[id].title.split(' ').join('-')}`);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -246,13 +240,14 @@ export default function DataTableDemo({ problems }) {
     }
     return (
         <Box sx={{ width: '100%' }}>
-            <Paper sx={{ width: '100%', mb: 2 }}>
+            <Paper sx={{ width: '95%', margin: 'auto', mb: 2, mt: 4 }}>
                 <EnhancedTableToolbar numSelected={0} />
                 <TableContainer>
                     <div>
                         <input
+                            style={{ width: '30%', margin: 'auto' }}
                             className="form-control me-2" type="search"
-                            placeholder="Search for question" aria-label="Search"
+                            placeholder="🔍 Search for question" aria-label="Search"
                             onChange={(e) => { changeQuestions(e.target.value); }}
                         />
                     </div>
@@ -300,13 +295,11 @@ export default function DataTableDemo({ problems }) {
                                             id={labelId}
                                             scope="row"
                                             padding="none"
-                                        >
-                                            {row.title}
+                                        ><b>{row.title}</b>
                                         </TableCell>
                                         <TableCell align="right">{row.rating}</TableCell>
                                         <TableCell align="right">{parseFloat(row.accuracy).toFixed(2)}%</TableCell>
                                         <TableCell align="right">{row.total_accepted}</TableCell>
-                                        <TableCell align="right">{row.status}</TableCell>
                                     </TableRow>
                                 );
                             })}

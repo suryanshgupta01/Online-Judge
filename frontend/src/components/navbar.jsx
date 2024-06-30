@@ -23,7 +23,7 @@ function Navbar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [globalUser, setGlobalUser] = React.useState({})
-    const baseURL = "https://online-judge-2.onrender.com"
+    const baseURL = import.meta.env.VITE_baseURL
     useEffect(() => {
         if (currentUser) {
             axios.post(`${baseURL}/user/userinfo`, {
@@ -50,11 +50,13 @@ function Navbar() {
     };
 
     return (
-        <nav className="navbar bg-dark border-bottom border-body" data-bs-theme="dark" >
-            <div className="container-fluid">
+        <nav className="navbar bg-dark border-bottom border-body" data-bs-theme="dark" style={{margin:'0rem',padding:'0rem'}} >
+            <div className="container-fluid" style={{ backgroundColor:'#231f20'}}>
                 <div>
-
-                    <Link className="navbar-brand" to='/'>Home</Link>
+                    <Link className="navbar-brand" to='/'>
+                    <img src="../../public/Onine judge pic.png" alt="logo" style={{ height: '4rem',margin:'0rem' }} />
+                        {/* Online Judge */}
+                        </Link>
 
                 </div>
                 <div>
@@ -72,8 +74,8 @@ function Navbar() {
                             <Link className="navbar-brand" to='/problemset'>Problemset</Link>
                             <Link className="navbar-brand" to='/contests'>Contests</Link>
                             <div style={{ marginRight: '1rem', color: 'gray', fontSize: '1rem' }}>
-                                {globalUser.isAdmin ? <span ><Link to='/admin' style={{ textDecoration: 'none' }}>🟢Admin</Link></span> : <></>}
-                                <span style={{ marginRight: '0.5rem', marginLeft: '1rem' }}>
+                                {globalUser.isAdmin ? <span style={{ marginRight: '0.5rem' }} ><Link to='/admin' style={{ textDecoration: 'none' }} >🟢Admin</Link></span> : <></>}
+                                <span style={{ marginRight: '0.5rem', marginLeft: '0.4rem' }}>
                                     {currentUser.displayName ? currentUser.displayName : currentUser.email}
                                 </span>
                                 <IconButton sx={{ p: 0 }} >
@@ -97,15 +99,18 @@ function Navbar() {
                                 onClose={handleCloseUserMenu}
                             >
                                 <MenuItem onClick={handleCloseUserMenu}>
-                                    {globalUser ? <Typography textAlign="center"> <Link to={`/profile/${globalUser.name}`}>Profile</Link>  </Typography> : <></>}
+                                    {globalUser ? <Typography textAlign="center"> <Link className='links' to={`/profile/${globalUser.name}`}>Profile</Link>  </Typography> : <></>}
                                 </MenuItem>
                                 <MenuItem onClick={handleCloseUserMenu}>
                                     <Typography textAlign="center">
-                                        <Link onClick={() => logout()}> Logout</Link>
+                                        <Link className='links' onClick={() => logout()}> Logout</Link>
                                     </Typography>
                                 </MenuItem>
                                 <MenuItem onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center"> <Link to={`/problemset`}>Problemset</Link> </Typography>
+                                    <Typography textAlign="center"> <Link className='links' to={`/problemset`}>Problemset</Link> </Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleCloseUserMenu}>
+                                    <Typography textAlign="center"> <Link className='links' to={`/contests`}>Contests</Link> </Typography>
                                 </MenuItem>
 
                             </Menu>

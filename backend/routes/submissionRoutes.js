@@ -6,6 +6,7 @@ const { executeCode } = require('../executeCode');
 const Submission = require('../models/submissionModel');
 const Contest = require('../models/contestModel');
 const app = express();
+
 const createSubmission = async (problem, problemName, contestID, username, user, code, language, verdict) => {
     const submission = new Submission({ problem, problemName, contest: contestID, userName: username, user, code, language, verdict })
     await submission.save()
@@ -17,43 +18,54 @@ const createSubmission = async (problem, problemName, contestID, username, user,
         for (i = 0; i < len; i++) {
             if (problems[i]._id.equals(problem)) break;
         }
+        const indiproblem = await Problem.findById(problem)
         let ispresent = 0;
         contest.submissions.push(submission._id)
-        const newleaderboard = contest.leaderboard.map((ele, ind) => {
+
+        let newleaderboard = contest.leaderboard.map((ele, ind) => {
             if (ele.userName == username) {
                 ispresent = 1
                 ele.numTried[i] = ele.numTried[i] + 1;
-                if (verdict == 'Accepted' || ele.isAccepted[i] == true) {
+                if (verdict == 'Accepted\n' || ele.isAccepted[i] == true) {
+                    if (!ele.isAccepted[i]) {
+                        ele.globalRank[i] = contest.correctSubmissions[i] + 1;
+                        contest.correctSubmissions[i] = contest.correctSubmissions[i] + 1;
+                    }
                     ele.isAccepted[i] = true;
-                } else ele.penalty = ele.penalty + 1;
+                    const timepassedinmins = (new Date().getTime() - new Date(contest.start_time).getTime()) / 60000
+                    ele.maxRating = Math.max(ele.maxRating, Math.floor(indiproblem.rating - timepassedinmins / contest.duration * 100 - ele.penalty / 300 * 50))
+                    // console.log(ele.maxRating, Math.floor(indiproblem.rating - timepassedinmins / contest.duration * 100 - ele.penalty / 300 * 50), indiproblem.rating, timepassedinmins / contest.duration * 100, ele.penalty / 300 * 50)
+                } else {
+                    ele.penalty = ele.penalty + 50;
+                }
             }
             return ele;
         })
-        console.log(newleaderboard)
-        //userName penalty numTried isAccepted
+        contest.numSubmissions[i] = contest.numSubmissions[i] + 1;
         if (ispresent == 0) {
-            newleaderboard.push({ userName: username, numTried: new Array(len).fill(0), isAccepted: new Array(len).fill(false) })
+            newleaderboard.push({ userName: username, numTried: new Array(len).fill(0), isAccepted: new Array(len).fill(false), globalRank: new Array(len).fill(0), maxRating: 0, penalty: 0 })
             newleaderboard[newleaderboard.length - 1].numTried[i] = 1;
-            if (verdict == 'Accepted') {
+            if (verdict == 'Accepted\n') {
                 newleaderboard[newleaderboard.length - 1].isAccepted[i] = true;
+                newleaderboard[newleaderboard.length - 1].globalRank[i] = contest.correctSubmissions[i] + 1;
+                contest.correctSubmissions[i] = contest.correctSubmissions[i] + 1;
+                const timepassedinmins = (new Date().getTime() - new Date(contest.start_time).getTime()) / 60000
+                newleaderboard[newleaderboard.length - 1].maxRating = Math.floor(indiproblem.rating - timepassedinmins / contest.duration * 100 - newleaderboard[newleaderboard.length - 1].penalty / 300 * 50)
+                // console.log("first time rating, ", Math.floor(indiproblem.rating - timepassedinmins / contest.duration * 100 - newleaderboard[newleaderboard.length - 1].penalty / 300 * 50))
+            } else {
+                newleaderboard[newleaderboard.length - 1].penalty = 50;
             }
         }
 
         newleaderboard.sort((a, b) => {
-            let count1 = 0, count2 = 0;
-            for (let i = 0; i < len; i++) {
-                if (a.isAccepted[i] == true) count1++;
-                if (b.isAccepted[i] == true) count2++;
-            }
-            if (count1 != count2) return count2 - count1;
-            return a.penalty - b.penalty;
+            return b.maxRating - a.maxRating
         })
         contest.leaderboard = newleaderboard;
-        console.log(newleaderboard)
         await contest.save()
     }
     return submission._id
 }
+
 app.post('/run', async (req, res) => {
     try {
         const lang = req.body.lang;
@@ -104,7 +116,8 @@ app.post('/run', async (req, res) => {
                     problem.total_submissions = problem.total_submissions + 1
                     await problem.save()
                     const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, 'Wrong Answer on TC ' + (pass + 1) + '\nWrong TestCase: \n' + problem.allTCarr[pass] + '\nYour output:\n' + answer + '\nCorrect output:\n' + output)
-                    userinfo.problems_submitted.push(sub)
+                    if (!contest)
+                        userinfo.problems_submitted.push(sub)
                     await userinfo.save()
                     return res.send({ wrongTC: problem.allTCarr[pass], Wooutput: answer, Coutput: output, pass, isCorrect: false });
                 } else pass++
@@ -113,7 +126,8 @@ app.post('/run', async (req, res) => {
             problem.total_submissions = problem.total_submissions + 1
             await problem.save()
             const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, 'Accepted\n')
-            userinfo.problems_submitted.push(sub)
+            if (!contest)
+                userinfo.problems_submitted.push(sub)
             await userinfo.save()
             return res.send({ isCorrect: true });
         }
@@ -124,7 +138,7 @@ app.post('/run', async (req, res) => {
             res.status(404).send('unauthorized user');
         }
         let err = error.stderr
-        if (err.includes('_' + userinfo.name + '.')) {
+        if (err?.includes('_' + userinfo.name + '.')) {
             err = 'Compilation Error \n' + err
         } else {
             err = 'Segmentation fault \n' + err
@@ -136,14 +150,10 @@ app.post('/run', async (req, res) => {
             const contestName = req.body?.contestName;
             let contest = null;
             if (contestName) {
-                try {
-                    contest = await Contest.findOne({ title: contestName.split('-').join(' ') })
-                    if ((new Date(contest?.start_time).getTime() + contest?.duration * 60000) < (new Date().getTime()) || new Date(contest?.start_time).getTime() > new Date().getTime()) {
-                        contest = null
-                        // console.log("contest over or not started")
-                    }
-                } catch (err) {
-                    console.log("contest not found", err)
+                contest = await Contest.findOne({ title: contestName.split('-').join(' ') })
+                if ((new Date(contest?.start_time).getTime() + contest?.duration * 60000) < (new Date().getTime()) || new Date(contest?.start_time).getTime() > new Date().getTime()) {
+                    contest = null
+                    // console.log("contest over or not started")
                 }
             }
             const problem = await Problem.findById(req.body.probID)
@@ -154,7 +164,8 @@ app.post('/run', async (req, res) => {
             problem.total_submissions = problem.total_submissions + 1
             await problem.save()
             const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, err)
-            userinfo.problems_submitted.push(sub)
+            if (!contest)
+                userinfo.problems_submitted.push(sub)
             await userinfo.save()
         }
         return res.status(500).send(err);
@@ -188,8 +199,8 @@ app.post('/allsubproblem', async (req, res) => {
         return res.status(404).send('user not found')
     }
     const submissions = await Submission.find({ problemName: probName }).populate('user')
-    const problem = await Problem.find({ title: probName })
-    if ((new Date().getTime() > (new Date(problem.availableFrom).getTime() + problem.duration * 60000))) {
+    const problem = await Problem.findOne({ title: probName })
+    if (new Date().getTime() > (new Date(problem.availableFrom).getTime() + problem.duration * 60000)) {
         res.send(submissions.reverse()); return
     }
     const mysub = submissions.filter((ele) => ele.user._id.equals(user._id))

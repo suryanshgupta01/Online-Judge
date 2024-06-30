@@ -23,6 +23,14 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    max_contest_rating: {
+        type: Number,
+        default: 0
+    },
+    contest_participated: {
+        type: Number,
+        default: 0
+    },
     problems_submitted: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Submission"

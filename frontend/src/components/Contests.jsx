@@ -32,8 +32,8 @@ const Contests = () => {
     }, []);
 
     return (<>
-        <h1>Current Contests</h1>
-        <table className="table table-hover table-striped " style={{ marginBottom: '2rem' }}>
+        <h2 style={{marginTop:'2rem', textAlign: 'left',paddingLeft:'4rem' }}>Current Contests</h2>
+        <table className="table table-hover table-striped " style={{ width:'90%',margin:'auto' }}>
             <thead className='table-dark'>
                 <tr>
                     <th scope="col">S.No.</th>
@@ -51,7 +51,7 @@ const Contests = () => {
                             <tr>
                                 <th scope="row">{index + 1}</th>
                                 <td>
-                                    <Link to={`/contest/${contest.title.split(' ').join('-')}`}>
+                                    <Link to={`/contest/${contest.title.split(' ').join('-')}`} className='links'>
                                         {contest.title}
                                     </Link>
                                 </td>
@@ -70,13 +70,14 @@ const Contests = () => {
             </tbody>
         </table >
 
-        <h1>Upcoming Contests</h1>
-        <table className="table table-hover table-striped" style={{ marginBottom: '2rem' }}>
+        <h2 style={{ marginTop: '2rem', textAlign: 'left', paddingLeft: '4rem' }}>Upcoming Contests</h2>
+        <table className="table table-hover table-striped " style={{ width: '90%', margin: 'auto' }}>
             <thead className='table-dark'>
                 <tr>
                     <th scope="col">S.No.</th>
                     <th scope="col">Title</th>
                     <th scope="col">Start</th>
+                    <th scope="col">Duration</th>
                     <th scope="col">Time remaining</th>
                 </tr>
             </thead>
@@ -92,6 +93,9 @@ const Contests = () => {
                                     {moment(contest.start_time).format('MMMM Do YYYY, h:mm a')}
                                 </td>
                                 <td>
+                                    {contest.duration} mins
+                                </td>
+                                <td>
                                     {moment(contest.start_time).fromNow()}
                                 </td>
 
@@ -100,9 +104,8 @@ const Contests = () => {
                 })}
             </tbody>
         </table >
-
-        <h1>Past Contests</h1>
-        <table className="table table-hover table-striped" style={{ marginBottom: '2rem' }}>
+        <h2 style={{ marginTop: '2rem', textAlign: 'left', paddingLeft: '4rem' }}>Past Contests</h2>
+        <table className="table table-hover table-striped " style={{ width: '90%', margin: 'auto' }}>
             <thead className='table-dark'>
                 <tr>
                     <th scope="col">S.No.</th>
@@ -124,7 +127,7 @@ const Contests = () => {
                                     {moment(contest.start_time).format('MMMM Do YYYY, h:mm a')}
                                 </td>
                                 <td>
-                                    <Link to={`/contest/${contest.title.split(' ').join('-')}`}>
+                                    <Link to={`/contest/${contest.title.split(' ').join('-')}`} className='links'>
                                         Leaderboard
                                     </Link>
                                 </td>

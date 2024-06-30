@@ -24,12 +24,15 @@ const baseURL = import.meta.env.VITE_baseURL
 
 const Signin = () => {
     const { currentUser, login, deleteUser, signup, logout, handleGoogle, handleGithub, handleMicrosoft, handleTwitter, handleFacebook } = useUserContext()
-    const [email, setEmail] = useState('')
+    const [email, setEmail] = useState(localStorage.getItem('email')||'')
     const [password, setPassword] = useState('')
     const [successmessage, setSuccessMessage] = useState('')
     const [errormessage, setErrorMessage] = useState('')
     const defaultTheme = createTheme();
     const navigate = useNavigate()
+    if(currentUser){
+        navigate('/')
+    }
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
@@ -38,7 +41,7 @@ const Signin = () => {
             setSuccessMessage("User logged in successfully")
             setTimeout(() => {
                 navigate('/')
-            }, 2000)
+            }, 1000)
         } catch (err) {
             setErrorMessage("Invalid Creditentials")
             console.log(err)
@@ -100,6 +103,7 @@ const Signin = () => {
                                 margin="normal"
                                 required
                                 fullWidth
+                                defaultValue={email}
                                 id="email"
                                 label="Email Address"
                                 name="email"

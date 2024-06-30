@@ -27,15 +27,19 @@ const baseURL = import.meta.env.VITE_baseURL
 const Signup = () => {
     const { currentUser, login, signup, logout, handleGoogle, handleGithub, handleMicrosoft, handleTwitter, handleFacebook } = useUserContext()
     const [name1, setName1] = useState('')
-    const [email, setEmail] = useState(localStorage.getItem('email'))
+    const [email, setEmail] = useState(localStorage.getItem('email')||'')
     const navigate = useNavigate()
     const [password, setPassword] = useState('')
     const [successmessage, setSuccessMessage] = useState('')
     const [errormessage, setErrorMessage] = useState('')
+    if (currentUser) {
+        navigate('/')
+    }
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
             setErrorMessage('')
+            localStorage.setItem('email', email)
             await signup(name1, email, password)
             setSuccessMessage("User created successfully")
             setTimeout(() => {

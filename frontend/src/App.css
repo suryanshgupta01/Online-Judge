@@ -98,7 +98,11 @@ p {
     font-size: 15px;
 }
 
-
+.links {
+    text-decoration: none;
+    color: grey;
+    font-weight: 900;
+}
 
 .content1 {
     padding: 0px;

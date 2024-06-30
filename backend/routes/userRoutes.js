@@ -21,7 +21,6 @@ app.get('/profile/:ID', async (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-    console.log("in register API")
     try {
         const { userid, name } = req.body;
         if (!userid || !name) {

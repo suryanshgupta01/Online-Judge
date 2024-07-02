@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 require("dotenv").config()
 const bodyParser = require('body-parser');
-const connectDB = require('./connectDBnew');
+const {connectDB} = require('./connectDBnew');
 const submissionRoutes = require('./routes/submissionRoutes')
 const PORT = process.env.SUBMISSION_PORT || 4500;
 const cors = require('cors');

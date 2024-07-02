@@ -95,6 +95,7 @@ int main(){
                 return;
             }
             setLoading(true);
+            console.log(currentUser.uid, problem._id, contestName)
             const { data } = await axios.post(`${baseURLsubs}/submission/run`, {
                 lang, code: codeRef.current.editor.getValue(), isSubmit: (isSubmit == 1), userID: currentUser.uid, probID: problem._id, input: console1, contestName: contestName
             });
@@ -103,13 +104,18 @@ int main(){
                 if (data.isCorrect) {
                     setSuccessMsg("Accepted");
                     setVerdict("Code accepted")
+                    setMysubmission((prev) => [{ code: codeRef.current.editor.getValue(), lang: lang, verdict: "Accepted\n", createdAt: new Date() }, ...prev])
+                    setAllsubmission((prev) => [{ code: codeRef.current.editor.getValue(), lang: lang, verdict: "Accepted\n", createdAt: new Date() }, ...prev])
                 } else {
-                    setVerdict(`Test Case ${data.pass + 1} incorrect.\nWrong Test Case: \n ${data.wrongTC} \nYour Output: \n ${data.Wooutput} \nCorrect Output: \n ${data.Coutput} `);
                     setErrorMsg("Wrong Answer");
+                    setVerdict(`Test Case ${data.pass + 1} incorrect.\nWrong Test Case: \n ${data.wrongTC} \nYour Output: \n ${data.Wooutput} \nCorrect Output: \n ${data.Coutput} `);
+                    setMysubmission((prev) => [{ code: codeRef.current.editor.getValue(), lang: lang, verdict: `Test Case ${data.pass + 1} incorrect.\nWrong Test Case: \n ${data.wrongTC} \nYour Output: \n ${data.Wooutput} \nCorrect Output: \n ${data.Coutput} `, createdAt: new Date() }, ...prev])
+                    setAllsubmission((prev) => [{ code: codeRef.current.editor.getValue(), lang: lang, verdict: `Test Case ${data.pass + 1} incorrect.\nWrong Test Case: \n ${data.wrongTC} \nYour Output: \n ${data.Wooutput} \nCorrect Output: \n ${data.Coutput} `, createdAt: new Date() }, ...prev])
                 }
             else
                 setOutput(data.answer);
         } catch (error) {
+            setErrorMsg("Error in code");
             if (isSubmit == 2)
                 setOutput(error.response.data)
             else setVerdict(error.response.data)
@@ -136,15 +142,23 @@ int main(){
     //     console.log(data)
     //     setMysubmission(data);
     // }
+
     const getallsubmission = async () => {
-        const { data } = await axios.post(`${baseURLsubs}/submission/allsubproblem`, {
-            problemName: Pname,
-            userID: currentUser.uid
-        });
-        console.log(data)
-        const mysub = data.filter((ele) => ele.user.userid == currentUser.uid)
-        setMysubmission(mysub)
-        setAllsubmission(data);
+        console.log(Pname, currentUser.uid)
+        axios.post(`${baseURL}/user/userinfo`, {
+            uid: currentUser.uid
+        }).then(async (res) => {
+            const { data } = await axios.post(`${baseURL}/problem/allsubproblem`, {
+                problemName: Pname,
+                userID: currentUser.uid
+            });
+            const mysub = data.filter((ele) => ele.userName == res.data.name)
+            setMysubmission(mysub)
+            setAllsubmission(data);
+            console.log(mysub)
+        }).catch((err) => {
+            console.log(err)
+        })
     }
     const paneRef = useRef();
     const [width, setWidth] = useState('50%'); // Initial width
@@ -225,7 +239,7 @@ int main(){
                                 <div className='makerow' style={{ display: 'flex', justifyContent: 'space-evenly' }}>
                                     <p>Submissions: {problem.total_submissions}</p>
                                     <p>Accepted: {problem.total_accepted}</p>
-                                    <p>Accuracy: {((problem.total_accepted / problem.total_submissions) * 100).toFixed(2)}%</p>
+                                    <p>Accuracy: {((problem.total_accepted / (problem.total_submissions == 0) ? 1 : problem.total_submissions) * 100).toFixed(2)}%</p>
                                 </div>
                             </div>
                         </TabPanel>
@@ -270,7 +284,7 @@ int main(){
                                         {allsubmission?.map((problem) => (
                                             <tr>
                                                 <td ><Avatar1 info={problem} /></td>
-                                                <td >{problem.user?.name?.substr(0, 20)}</td>
+                                                <td >{problem.userName?.substr(0, 20)}</td>
                                                 <td>{moment(new Date(problem.createdAt)).fromNow()}</td>
                                                 <td>{langMap[problem.language]}</td>
                                                 <td style={{ backgroundColor: (problem.verdict == 'Accepted\n') ? '#C3E6CB' : '#F5C6CB' }}>{problem.verdict.split('\n')[0]}</td>
@@ -345,17 +359,18 @@ int main(){
                             </Tabs>
 
                         </div>
-                        <div className={`collapsible ${isActive ? 'active' : ''} `} >
-                            <button onClick={() => setIsActive(!isActive)} type="button" style={{ width: '31%' }} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
-                                Console <i className="fa-solid fa-terminal ml-2"></i>
-                            </button>
-                            <button onClick={() => handleSubmit()} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
-                                {!loading ? <>Run <i className="fa-solid fa-play ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
-                            </button>
-                            <button onClick={handleSubmit2} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
-                                {!loading ? <>Submit <i className="fa-solid fa-circle-check ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
-                            </button>
-                        </div>
+                        {currentUser ?
+                            <div className={`collapsible ${isActive ? 'active' : ''} `} >
+                                <button onClick={() => setIsActive(!isActive)} type="button" style={{ width: '31%' }} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                    Console <i className="fa-solid fa-terminal ml-2"></i>
+                                </button>
+                                <button onClick={() => handleSubmit()} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                    {!loading ? <>Run <i className="fa-solid fa-play ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
+                                </button>
+                                <button onClick={handleSubmit2} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                    {!loading ? <>Submit <i className="fa-solid fa-circle-check ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
+                                </button>
+                            </div> : null}
                     </div>
 
 

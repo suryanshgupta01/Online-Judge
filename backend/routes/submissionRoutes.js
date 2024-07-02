@@ -87,6 +87,7 @@ app.post('/run', async (req, res) => {
             }
         }
         if (!req.body.lang || !req.body.code || !req.body.probID || !req.body.userID) {
+            console.log(req.body)
             res.status(400).send('Information missing while running code'); return
         }
         const isSubmit = req.body.isSubmit || false
@@ -172,40 +173,24 @@ app.post('/run', async (req, res) => {
     }
 });
 
-app.post('/profile', async (req, res) => {
-    const user = await User.findOne({ userid: req.body.userID })
-    if (!user) {
-        return res.status(404).send('user not found')
-    }
-    const submissions = await Submission.find({ user: user._id })
-    res.send(submissions)
-})
+// app.post('/profile', async (req, res) => {
+//     const user = await User.findOne({ userid: req.body.userID })
+//     if (!user) {
+//         return res.status(404).send('user not found')
+//     }
+//     const submissions = await Submission.find({ user: user._id })
+//     res.send(submissions)
+// })
 
 // not used in this project 
-app.post('/mysubproblem', async (req, res) => {
-    const user = await User.findOne({ userid: req.body.userID })
-    if (!user) {
-        return res.status(404).send('user not found')
-    }
-    const submissions = await Submission.find({ user: user._id })
-    const mysub = submissions.filter((ele) => ele.problemName == req.body.problemName.split('-').join(' '))
-    res.send(mysub)
-})
-
-app.post('/allsubproblem', async (req, res) => {
-    const probName = req.body.problemName.split('-').join(' ')
-    const user = await User.findOne({ userid: req.body.userID })
-    if (!user) {
-        return res.status(404).send('user not found')
-    }
-    const submissions = await Submission.find({ problemName: probName }).populate('user')
-    const problem = await Problem.findOne({ title: probName })
-    if (new Date().getTime() > (new Date(problem.availableFrom).getTime() + problem.duration * 60000)) {
-        res.send(submissions.reverse()); return
-    }
-    const mysub = submissions.filter((ele) => ele.user._id.equals(user._id))
-    res.send(mysub.reverse());
-})
-
+// app.post('/mysubproblem', async (req, res) => {
+//     const user = await User.findOne({ userid: req.body.userID })
+//     if (!user) {
+//         return res.status(404).send('user not found')
+//     }
+//     const submissions = await Submission.find({ user: user._id })
+//     const mysub = submissions.filter((ele) => ele.problemName == req.body.problemName.split('-').join(' '))
+//     res.send(mysub)
+// })
 
 module.exports = app;

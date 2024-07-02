@@ -2,7 +2,13 @@ const express = require('express');
 const app = express();
 const Problem = require('../models/problemModel');
 const User = require('../models/userModel');
+const Submission = require('../models/submissionModel');
+const { connectRedis } = require('../connectDBnew');
 
+let client;
+(async () => {
+    client = await connectRedis();
+})();
 app.get('/', (req, res) => {
     res.send('Hello problem');
 });
@@ -47,10 +53,13 @@ app.delete('/delete/:ID', async (req, res) => {
 
 app.get('/problemset', async (req, res) => {
     try {
+        const val = await client.get('problemset')
+        if (val) { res.send(val); return }
         const allproblems = await Problem.find();
         const visibleprobs = allproblems.filter((ele) =>
             (new Date().getTime() > (new Date(ele.availableFrom).getTime() + ele.duration * 60000))
         )
+        await client.setEx('problemset', Number(process.env.EXPIRATION), JSON.stringify(visibleprobs))
         res.send(JSON.stringify(visibleprobs));
     } catch (err) {
         console.log("Failed to get problemset");
@@ -75,15 +84,67 @@ app.put('/update/:ID', async (req, res) => {
 
 app.get('/problem/:title', async (req, res) => {
     try {
+        const val = await client.get(`problem-${req.params.title}`)
+        if (val) {
+            res.send(val); return
+        }
         const title = req.params.title;
         const newtitle = title.split('-').join(' ');
         const details = await Problem.findOne({ 'title': newtitle });
         if (!details || new Date().getTime() < new Date(details.availableFrom).getTime()) {
             res.status(404).send('Problem not found');
         }
-        res.send(JSON.stringify(details));
+        client.setEx(`problem-${req.params.title}`, Number(process.env.EXPIRATION), JSON.stringify({
+            "title": details.title,
+            "question": details.question,
+            "constraints": details.constraints,
+            "solved_TC_input": details.solved_TC_input,
+            "solved_TC_output": details.solved_TC_output,
+            "rating": details.rating,
+            "inputFormat": details.inputFormat,
+            "outputFormat": details.outputFormat,
+            "total_submissions": details.total_submissions,
+            "total_accepted": details.total_accepted,
+            "author": details.author,
+            "_id":details._id
+        }))
+        res.send(JSON.stringify(
+            {
+                "title": details.title,
+                "question": details.question,
+                "constraints": details.constraints,
+                "solved_TC_input": details.solved_TC_input,
+                "solved_TC_output": details.solved_TC_output,
+                "rating": details.rating,
+                "inputFormat": details.inputFormat,
+                "outputFormat": details.outputFormat,
+                "total_submissions": details.total_submissions,
+                "total_accepted": details.total_accepted,
+                "author": details.author,
+                "_id":details._id
+            }
+        ));
     } catch (err) {
         console.log("error getting problem by title");
     }
 });
+
+app.post('/allsubproblem', async (req, res) => {
+    const probName = req.body.problemName.split('-').join(' ')
+    const user = await User.findOne({ userid: req.body.userID })
+    if (!user) {
+        return res.status(404).send('user not found')
+    }
+    const submissions = await Submission.find({ problemName: probName })
+    const problem = await Problem.findOne({ title: probName })
+    if (!problem) {
+        return res.status(404).send('problem not found')
+    }
+    if (new Date().getTime() > (new Date(problem.availableFrom).getTime() + problem.duration * 60000)) {
+        res.send(submissions.reverse()); return
+    }
+    const mysub = submissions.filter((ele) => ele.userName == user.name)
+    res.send(mysub.reverse());
+})
+
 module.exports = app;

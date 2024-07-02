@@ -50,14 +50,13 @@ function Navbar() {
     };
 
     return (
-        <nav className="navbar bg-dark border-bottom border-body" data-bs-theme="dark" style={{margin:'0rem',padding:'0rem'}} >
-            <div className="container-fluid" style={{ backgroundColor:'#231f20'}}>
+        <nav className="navbar bg-dark border-bottom border-body" data-bs-theme="dark" style={{ margin: '0rem', padding: '0rem' }} >
+            <div className="container-fluid" style={{ backgroundColor: '#231f20' }}>
                 <div>
                     <Link className="navbar-brand" to='/'>
-                    <img src="../../public/Onine judge pic.png" alt="logo" style={{ height: '4rem',margin:'0rem' }} />
+                        <img src="/Onine judge pic.png" alt="logo" style={{ height: '4rem', margin: '0rem' }} />
                         {/* Online Judge */}
-                        </Link>
-
+                    </Link>
                 </div>
                 <div>
 

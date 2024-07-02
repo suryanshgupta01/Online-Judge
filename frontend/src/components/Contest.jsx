@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router-dom'
 import Avatar1 from '../UI/Avatar'
 const baseURL = import.meta.env.VITE_baseURL
 function Contest() {
-    const { ID } = useParams()
+    const { ID, status } = useParams()
     const [contest, setContest] = useState({})
     const langMap = {
         'cpp': 'C++',
@@ -16,7 +16,10 @@ function Contest() {
         'rb': 'Ruby'
     };
     useEffect(() => {
-        axios.get(`${baseURL}/contest/getcontest/${ID.split('-').join(' ')}`)
+        axios.post(`${baseURL}/contest/getcontest`, {
+            ID: ID.split('-').join(' '),
+            notLive: status == 'live' ? 0 : 1
+        })
             .then(data => {
                 // const sortedprob = data.data.problems.sort(function (a, b) { return a["rating"] - b["rating"] })
                 setContest(data.data)
@@ -142,9 +145,9 @@ function Contest() {
 
                             </thead>
                             <tbody>
-                                {contest.leaderboard?.map((user,ind) => (
+                                {contest.leaderboard?.map((user, ind) => (
                                     <tr>
-                                        <td>{ind+1}</td>
+                                        <td>{ind + 1}</td>
                                         <td >{user.userName?.substr(0, 20)}</td>
                                         <td>{user.penalty}</td>
                                         <td>{parseFloat((user?.isAccepted?.filter(submission => submission).length) / (user.isAccepted?.length) * 100).toFixed(2)}%</td>

@@ -13,7 +13,6 @@ app.get('/profile/:ID', async (req, res) => {
         if (!details || details.length == 0) {
             return res.status(404).send({ "msg": "User not found" });
         }
-        
         return res.send(details);
     } catch (error) {
         console.error('Error fetching user by name:', error);

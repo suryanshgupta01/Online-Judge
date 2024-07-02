@@ -41,7 +41,7 @@ const Profile = () => {
         e.preventDefault();
         setSuccessmessage('');
         setErrormessage('');
-        axios.put(`${baseURL}/user/changeinfo`, { name: name2, email: email2, userid: currentUser.uid, profile_pic: user.profile_pic })
+        axios.put(`${baseURL}/user/changeinfo`, { name: name2, email: email2, userid: currentUser?.uid, profile_pic: user.profile_pic })
             .then(response => {
                 setErrormessage('');
                 console.log(response.data)
@@ -112,7 +112,7 @@ const Profile = () => {
             <Tabs >
                 <TabList>
                     <Tab>Profile</Tab>
-                    {(user.userid == currentUser.uid) ?
+                    {(user.userid == currentUser?.uid) ?
                         <Tab>Update profile</Tab> : null}
                     <Tab>Submissions</Tab>
 
@@ -124,14 +124,14 @@ const Profile = () => {
                             <div style={{ width: '90%' }}>
                                 <h1>{user.name}</h1>
                                 <p><img src="https://img.freepik.com/free-vector/business-success-growth-green-arrow-world-map_1017-45122.jpg?t=st=1719004907~exp=1719008507~hmac=90dc194f84f538887a5da2ccd3502848bc256c7807305ebfcb1ade981f5b2469&w=996"
-                                    width="24px" />   Contest Rating: {user.contest_rating}  (max. {user.max_contest_rating||0})</p>
+                                    width="24px" /> Contest Rating:<strong> {user.contest_rating}</strong> (max. {user.max_contest_rating || 0})</p>
                                 <p><img src="https://img.freepik.com/free-vector/3d-cartoon-style-paper-with-green-tick-envelope-icon-open-envelope-with-approved-document-contract-agreement-flat-vector-illustration-paperwork-success-verification-concept_778687-1016.jpg"
-                                    width="30px" style={{ backgroundBlendMode: 'color' }} />  Email: {user.email}</p>
+                                    width="30px" style={{ backgroundBlendMode: 'color' }} /> {user.email}</p>
                                 <p><img src="https://img.freepik.com/free-vector/website-faq-section-user-help-desk-customer-support-frequently-asked-questions-problem-solution-quiz-game-confused-man-cartoon-character_335657-1602.jpg?t=st=1719003235~exp=1719006835~hmac=4ba23537109a2b490dd8094171407ac21aa1ae27245deece62f9f00c44cc9f6c&w=740"
-                                    width="24px" />
-                                    Problems Submitted: {user.problems_submitted?.length}</p>
-                                <p>Admin Status: {user.isAdmin ? 'Yes' : 'No'}</p>
-                                <p>Account created: {moment(currentUser?.metadata.creationTime).fromNow()}</p>
+                                    width="24px" /> Problems Submitted: <strong>{user.problems_submitted?.length}</strong></p>
+                                <p><img src="https://thumbs.dreamstime.com/b/contest-green-word-text-hanging-white-background-clipping-path-43028879.jpg" width="24px" /> Contest Participated in : <strong>{user.contest_participated}</strong></p>
+                                <p><img src="https://c7.alamy.com/comp/2BG76AY/three-persons-admin-icon-outline-style-2BG76AY.jpg"
+                                    width="24px" /> Admin Status: <strong>{user.isAdmin ? '🟢' : '🔴'}</strong></p>
                             </div>
                             <div>
                                 <img src={user.profile_pic} alt="Profile" style={{ width: '10rem', height: '10rem', right: '0' }} />
@@ -140,7 +140,7 @@ const Profile = () => {
 
                     </div>
                 </TabPanel>
-                {(user.userid == currentUser.uid) ?
+                {(user.userid == currentUser?.uid) ?
                     <TabPanel >
                         <ThemeProvider theme={defaultTheme} >
                             <Container component="main" maxWidth="xs" >

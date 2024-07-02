@@ -7,6 +7,7 @@ const baseURL = import.meta.env.VITE_baseURL
 const CustomContext = createContext();
 const UseCustomContext = ({ children }) => {
     const [currentUser, setCurrentUser] = useState()
+    const [renderconnected, setRenderconnected] = useState(false)
     const [loading, setLoading] = useState(true)
     const [userID, setUserID] = useState(0)
 
@@ -84,7 +85,6 @@ const UseCustomContext = ({ children }) => {
         return names
     }
     const handleCreateUser = async (user) => {
-        console.log("in signup my base")
         if (!user) return
         const name1 = makeusername(user.email, user.displayName)
         console.log(name1, user.uid, user.email, user.photoURL)
@@ -98,6 +98,12 @@ const UseCustomContext = ({ children }) => {
             .catch(error => console.log("error creating user in my DB"))
         localStorage.setItem('tried', 1);
     }
+    const checkHealthRender = async () => {
+        if (renderconnected) return
+        const { data: response } = await axios.get(`${baseURL}/health`)
+        if (response == 'Server is running') setRenderconnected(true)
+    }
+
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             setCurrentUser(user)
@@ -105,6 +111,11 @@ const UseCustomContext = ({ children }) => {
                 setUserID(user.uid)
             if (!localStorage.getItem('tried'))
                 handleCreateUser(user)
+            if (!renderconnected)
+                for (let i = 0; i < 10; i++) {
+                    checkHealthRender()
+                    if (renderconnected) break
+                }
             console.log(user)
             setLoading(false)
         })

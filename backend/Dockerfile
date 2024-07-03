@@ -9,7 +9,7 @@ RUN apk add --update build-base
 RUN apk add --update python3
 
 # install redis
-# RUN apk add --update redis && redis-server &
+# RUN apk add --update redis && redis-server && redis-cli
 
 # Install g++
 # RUN apk add --update g++

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
-const { createClient } = require('redis')
 dotenv.config()
+
 const connectDB = async () => {
     try {
         const conn = await mongoose.connect(process.env.MONGO_URL, {
@@ -12,15 +12,5 @@ const connectDB = async () => {
         process.exit();
     }
 };
-async function connectRedis() {
-    try {
-        const client = createClient();
-        client.on("error", (err) => console.log("Redis Client Connection Error"));
-        await client.connect();
-        console.log("Redis cache app database connected...");
-        return client;
-    } catch (error) {
-        console.log('Redis app connection Error...', error);
-    }
-}
-module.exports = {connectDB,connectRedis}
+
+module.exports = {connectDB}

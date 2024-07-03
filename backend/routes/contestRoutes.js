@@ -4,7 +4,6 @@ const User = require('../models/userModel');
 const app = express();
 const cron = require('node-cron');
 const Problem = require('../models/problemModel');
-const { connectRedis } = require('../connectDBnew');
 
 function scheduleJob(cronPattern, assignmentContestScores, ...params) {
     const task = cron.schedule(cronPattern, async () => {
@@ -87,16 +86,10 @@ app.post('/create', async (req, res) => {
         console.log("Failed to create contest");
     }
 })
-let client;
-(async () => {
-    client = await connectRedis();
-})();
+
 app.get('/contests', async (req, res) => {
     try {
-        const val = await client.get('contests')
-        if (val) { res.send(JSON.parse(val)); return }
         const contests = await Contest.find().populate('problems').sort({ start_time: 1 });
-        await client.setEx('contests', Number(process.env.EXPIRATION), JSON.stringify(contests))
         res.send(contests);
     }
     catch (err) {
@@ -106,17 +99,7 @@ app.get('/contests', async (req, res) => {
 
 app.post('/getcontest', async (req, res) => {
     try {
-        if (req.body.notLive == 1) {
-            const val = await client.get(`contest-${req.body.ID}`)
-            if (val) {
-                res.send(JSON.parse(val))
-                return
-            }
-        }
         const contest = await Contest.findOne({ title: req.body.ID }).populate(['problems', 'submissions']);
-        if (req.body.notLive == 1) {
-            client.setEx(`contest-${req.body.ID}`, Number(process.env.EXPIRATION), JSON.stringify(contest))
-        }
         res.send(contest);
     }
     catch (err) {

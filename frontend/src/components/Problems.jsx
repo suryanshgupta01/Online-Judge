@@ -90,7 +90,7 @@ int main(){
             setIsActive(true);
         // verdictRef.current.click();
         try {
-            if (isSubmit == 2 && (!codeRef.current.editor.getValue() || !console1)) {
+            if (!codeRef.current.editor.getValue() || !console1) {
                 setErrorMsg("Code or console is empty");
                 return;
             }

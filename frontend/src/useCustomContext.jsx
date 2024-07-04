@@ -22,7 +22,8 @@ const UseCustomContext = ({ children }) => {
                 userid: userID,
                 email: emailfinal
             })
-                .then(response => { console.log(response); })
+                .then(response => { //console.log(response); 
+                })
                 .catch(error => console.log("error creating user in FirebaseDB"))
         } catch (err) {
             console.log("Failed creating user with firebase")
@@ -87,7 +88,6 @@ const UseCustomContext = ({ children }) => {
     const handleCreateUser = async (user) => {
         if (!user) return
         const name1 = makeusername(user.email, user.displayName)
-        console.log(name1, user.uid, user.email, user.photoURL)
         axios.post(`${baseURL}/user/register`, {
             name: name1,
             userid: user.uid,
@@ -116,7 +116,7 @@ const UseCustomContext = ({ children }) => {
                     checkHealthRender()
                     if (renderconnected) break
                 }
-            console.log(user)
+            // console.log(user)
             setLoading(false)
         })
 

@@ -24,6 +24,7 @@ const Profile = () => {
     const navigate = useNavigate();
     const { name1 } = useParams();
     const [user, setUser] = useState({});
+    const [userproblemsubmitted, setuserproblemsubmitted] = useState([])
     const [isLoading, setIsLoading] = useState(false);
     const [successmessage, setSuccessmessage] = useState('');
     const [errormessage, setErrormessage] = useState('');
@@ -44,7 +45,6 @@ const Profile = () => {
         axios.put(`${baseURL}/user/changeinfo`, { name: name2, email: email2, userid: currentUser?.uid, profile_pic: user.profile_pic })
             .then(response => {
                 setErrormessage('');
-                console.log(response.data)
                 setSuccessmessage('User information updated successfully');
                 navigate(`/profile/${name2}`)
             })
@@ -54,14 +54,12 @@ const Profile = () => {
         const confirm = prompt("Are you sure you want to delete your account? This action cannot be undone.")
         setErrormessage('')
         setSuccessmessage('')
-        console.log(user._id)
         if (confirm.toLocaleLowerCase() !== "yes") return;
         axios.post(`${baseURL}/user/deleteuser`,
             {
                 "ID": user._id
             })
             .then(response => {
-                console.log(response.data)
                 setSuccessmessage('Account deleted successfully')
                 setTimeout(() => {
                     navigate('/')
@@ -79,12 +77,14 @@ const Profile = () => {
         const filereader = new FileReader()
         filereader.onload = () => {
             setUser({ ...user, profile_pic: filereader.result })
-            console.log(filereader.result)
         }
         filereader.readAsDataURL(event.target.files[0])
     }
     const defaultTheme = createTheme()
-
+    const changeProblemsubmitted = (ques) => {
+        const arr = user.problems_submitted.filter((prob) => prob.problemName.toLocaleLowerCase().includes(ques.trim().toLocaleLowerCase()))
+        setuserproblemsubmitted(arr)
+    }
     useEffect(() => {
         setIsLoading(true);
         axios.get(`${baseURL}/user/profile/${name1}`)
@@ -94,13 +94,13 @@ const Profile = () => {
                 else {
                     let problems_submitted = response.data.problems_submitted
                     problems_submitted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                    console.log(response.data.problems_submitted)
+                    setuserproblemsubmitted(response.data.problems_submitted)
                     setUser({ ...response.data, problems_submitted });
                     setName2(response.data.name);
                     setEmail2(response.data.email);
                 }
             })
-            .catch(error => { console.error('Error fetching user data:', error); navigate('/User-not-found') });
+            .catch(error => { console.error('hing user data:', error); navigate('/User-not-found') });
         setIsLoading(false);
     }, [name1]);
 
@@ -225,6 +225,12 @@ const Profile = () => {
                     : null}
                 <TabPanel>
                     <div style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+                        <input
+                            style={{ width: '30%', margin: 'auto',marginBottom:'0.5rem' }}
+                            className="form-control me-2" type="search"
+                            placeholder="🔍 Search for question" aria-label="Search"
+                            onChange={(e) => { changeProblemsubmitted(e.target.value); }}
+                        />
                         <table className="table table-hover " style={{ marginBottom: '2rem' }}>
                             <thead className='table-dark'>
                                 <tr>
@@ -236,10 +242,10 @@ const Profile = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {user?.problems_submitted?.map((problem) => (
+                                {userproblemsubmitted?.map((problem) => (
                                     <tr>
                                         <td><Avatar1 info={problem} /></td>
-                                        <td>{problem.problemName?.substr(0, 20)}</td>
+                                        <td>{problem.problemName?.substr(0, 21)}</td>
                                         <td>{moment(new Date(problem.createdAt)).format('MMMM Do YYYY, h:mm a')}</td>
                                         <td>{langMap[problem.language]}</td>
                                         <td>{problem.verdict.split('\n')[0]}</td>

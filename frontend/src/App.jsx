@@ -1,7 +1,4 @@
-import { useState, useContext } from 'react'
-import { useUserContext } from './useCustomContext'
-import { Route, useParams, Link, RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
-
+import {  RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
 import './App.css'
 import Signup from './components/Signup'
 import Profile from './components/Profile'
@@ -47,7 +44,7 @@ const router = createBrowserRouter([
         element: <Contests />
       },
       {
-        path: 'contest/:ID/:status',
+        path: 'contest/:ID',
         element: <Contest />
       },
       {

@@ -42,7 +42,6 @@ const assignmentContestScores = async (contestID) => {
             contest.leaderboard[i].maxRating = contest.leaderboard[i].maxRating - ((contest.leaderboard[i].globalRank[ind] - 1) / contest.numSubmissions[i] * 50)
         }
         user.contest_rating = (contest.leaderboard[i].maxRating + (user.contest_participated || 0) * user.contest_rating) / ((user.contest_participated || 0) + 1)
-        console.log((contest.leaderboard[i].maxRating + (user.contest_participated || 0) * user.contest_rating) / ((user.contest_participated || 0) + 1))
         user.contest_participated = (user.contest_participated || 0) + 1
         user.max_contest_rating = Math.max((user.max_contest_rating || 0), contest.leaderboard[i].maxRating)
         await user.save()
@@ -60,10 +59,8 @@ app.post('/create', async (req, res) => {
         }
         const userAuth = await User.findOne({ userid: req.body.userid });
         if (userAuth && userAuth.isAdmin) {
-            console.log(req.body.problems)
-            const endTime = new Date(new Date(req.body.start_time).getTime() + req.body.duration * 60000)
+           const endTime = new Date(new Date(req.body.start_time).getTime() + req.body.duration * 60000)
             const cronPattern = `${endTime.getMinutes()} ${endTime.getHours()} ${endTime.getDate()} ${endTime.getMonth() + 1} *`;
-            console.log(cronPattern)
             const newContest = new Contest({
                 title: req.body.title,
                 problems: req.body.problems,
@@ -90,7 +87,17 @@ app.post('/create', async (req, res) => {
 app.get('/contests', async (req, res) => {
     try {
         const contests = await Contest.find().populate('problems').sort({ start_time: 1 });
-        res.send(contests);
+        res.send(JSON.stringify(
+            contests.map(contest => {
+                return {
+                    title: contest.title,
+                    problems: contest.problems.map(problem => problem.title),
+                    start_time: contest.start_time,
+                    duration: contest.duration,
+                    leaderboard: contest.leaderboard.map(user => user.userName)
+                }
+            })
+        ));
     }
     catch (err) {
         console.log("Failed to get contests");
@@ -100,7 +107,27 @@ app.get('/contests', async (req, res) => {
 app.post('/getcontest', async (req, res) => {
     try {
         const contest = await Contest.findOne({ title: req.body.ID }).populate(['problems', 'submissions']);
-        res.send(contest);
+        res.send(JSON.stringify({
+            "problems": contest.problems.map((p) => {
+                return {
+                    "title": p.title,
+                    "total_accepted": p.total_accepted,
+                    "total_submissions": p.total_submissions,
+                    "rating": p.rating
+                }
+            }),
+            "submissions": contest.submissions.map((
+                sub) => {
+                return {
+                    "userName": sub.userName,
+                    "problemName": sub.problemName,
+                    "language": sub.language,
+                    "verdict": sub.verdict,
+                    "createdAt":sub.createdAt
+                }
+            }),
+            "leaderboard": contest.leaderboard
+        }));
     }
     catch (err) {
         console.log("failed geting contest by id");

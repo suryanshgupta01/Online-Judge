@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import { useUserContext } from '../useCustomContext';
+import { CircularProgress } from '@mui/material';
 
 const baseURL = import.meta.env.VITE_baseURL
 function Admin() {
@@ -44,9 +45,9 @@ function Admin() {
         })
             .then((res) => {
                 if (isContest) {
-                    setContestProblemIdarr((prev) => [...prev, res.data._id])
+                    setContestProblemIdarr((prev) => [...prev, res.data])
                 }
-                console.log(res.data)
+                // console.log(res.data)
                 setSuccessMsg('Problem created successfully')
                 setTitle('')
                 setQuestion('')
@@ -60,7 +61,7 @@ function Admin() {
                 setOutputFormat('')
             })
             .catch((err) => {
-                console.log(err)
+                console.log("error in admin",err)
                 setErrorMsg('Error creating problem')
             })
 
@@ -91,23 +92,26 @@ function Admin() {
             setDuration('')
             setContestProblemIdarr([])
         }).catch((err) => {
-            console.log(err)
+            console.log("error in admin",err)
             setContestErrorMsg('Error creating contest')
         })
     }
     const [globalUser, setGlobalUser] = React.useState({})
+    const [loading, setLoading] = React.useState(true)
     useEffect(() => {
         if (currentUser) {
             axios.post(`${baseURL}/user/userinfo`, {
                 "uid": currentUser.uid
             }).then((res) => {
                 setGlobalUser(res.data)
-                console.log(res.data)
+                // console.log(res.data)
+                setLoading(false)
             })
         }
     }, [currentUser]);
+    if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh' }}><CircularProgress  style={{ margin: 'auto',color:'green' }} /></div>
     if (globalUser && !globalUser.isAdmin) {
-        return <>Access Denied</>
+        return <h1>Access Denied</h1>
     }
     return (
         <div style={{ padding: '1rem' }}>

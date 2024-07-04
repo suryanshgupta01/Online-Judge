@@ -1,9 +1,13 @@
-const { exec } = require("child_process");
+const { exec, execSync } = require("child_process");
 const path = require("path");
-
-const executeCode = (filepath, dirCodes, inputFile, name, lang) => {
+const fs = require("fs");
+const psTree = require('ps-tree');
+const executeCode = async (filepath, dirCodes, inputFile, name, lang, tc) => {
     const fileID = '_' + name
     const dirCodepath = path.join(dirCodes, fileID)
+    const outFilepath = path.join(dirCodes, fileID + '.out')
+    const exeFilepath = path.join(dirCodes, fileID + '.exe')
+
     const commands = {
         // "cpp": `g++ ${filepath} -o ${dirCodepath} && cd ${dirCodes} && .\\${fileID}`,
         "cpp": `g++ ${filepath} -o ${dirCodepath} && ${dirCodepath}`,
@@ -15,28 +19,81 @@ const executeCode = (filepath, dirCodes, inputFile, name, lang) => {
         "rb": `ruby ${filepath}`,
         "rs": `rustc ${filepath}  && cd ${dirCodes} && .\${fileID}`
     }
-    console.log(dirCodepath)//try execFile
-    return new Promise((resolve, reject) => {
-        try {
-            const process = exec(
-                commands[lang], (error, stdout, stderr) => {
+    try {
+        let childProcess;
+        const compileCode = new Promise((resolve, reject) => {
+            childProcess = exec(
+                commands[lang],
+                (error, stdout, stderr) => {
                     if (error) {
-                        reject({ error, stderr });
+                        return reject({ error, stderr });
                     }
                     else if (stderr) {
-                        reject(stderr);
+                        return reject(stderr);
                     }
-                    else resolve(stdout);
+                    else {
+                        resolve(stdout);
+                    }
                 })
-            process.stdin.write(inputFile);
-            process.stdin.end();
-        } catch (err) {
-            reject(err)
-        }
-    });
+            childProcess.stdin.write(inputFile);
+            childProcess.stdin.end();
 
-};
+        });
+        async function killAllChildProcesses(pid) {
+            return new Promise((resolve, reject) => {
+                psTree(pid, (err, children) => {
+                    if (err) {
+                        console.error("Error finding child processes:", err);
+                        return reject(err);
+                    }
+                    [pid, ...children.map((p) => p.PID)].forEach((tpid) => {
+                        try {
+                            process.kill(tpid);
+                        } catch (e) {
+                            // console.error(`Error killing process ${tpid}:`, e);
+                        }
+                    });
+                    resolve('All killed successfully');
+                });
+            })
+        };
+        const timeout = new Promise((_, reject) => {
+            setTimeout(async () => {
+                if (childProcess) {
+                    await killAllChildProcesses(childProcess.pid);
+                }
+                
+                return reject({ stderr: `Time Limit Exceeded on Test case ${tc + 1}` });
+            }, 5000);
+        });
 
-module.exports = {
-    executeCode
-};
+        return Promise.race([timeout, compileCode]).then((val) => {
+            return val
+        }).catch((err) => {
+            setTimeout(() => {
+                try {
+                    if (fs.existsSync(exeFilepath)) {
+                        fs.unlinkSync(exeFilepath);
+                    }
+                    if (fs.existsSync(outFilepath)) {
+                        fs.unlinkSync(outFilepath)
+                    }
+                }
+                catch (err) {
+                    console.log("unable to delete exe/out file")
+                }
+            }, 1000);
+            // Safely delete the files
+
+            if (err?.error?.code == 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER') {
+                throw new Error(`Memory Limit Exceeded on Test case ${tc + 1}`)
+            }
+            throw new Error(err.stderr)
+        })
+    } catch (err) {
+        console.log("Error in executing code")
+    }
+
+}
+
+module.exports = { executeCode };

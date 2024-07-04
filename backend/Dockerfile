@@ -34,6 +34,12 @@ COPY package*.json ./
 RUN npm install 
 COPY . .
 
+ARG MONGO_URL=""
+ARG SUBMISSION_PORT=""
+
+ENV MONGO_URL=${MONGO_URL}
+ENV SUBMISSION_PORT=${SUBMISSION_PORT}
+
 EXPOSE 4500
 
 CMD ["npm", "run", "dev"];

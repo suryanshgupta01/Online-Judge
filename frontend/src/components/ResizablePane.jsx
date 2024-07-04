@@ -10,7 +10,6 @@ const ResizablePane = () => {
         const initialWidth = paneRef.current.offsetWidth
         const handleMouseMove = (moveEvent) => {
             const deltaX = moveEvent.clientX - initialX;
-            console.log(initialWidth, initialX);
             const newWidth = Math.min(window.innerWidth / 2, Math.max(-1 * window.innerWidth / 2, initialWidth + deltaX)); // Prevent negative width
             setWidth(`${newWidth / window.innerWidth * 100 + 50}%`);
         };

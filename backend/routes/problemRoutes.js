@@ -10,7 +10,6 @@ app.get('/', (req, res) => {
 app.post('/create', async (req, res) => {
     try {
         if (!req.body || !req.body.title || !req.body.question || !req.body.constraints || !req.body.solved_TC_input || !req.body.solved_TC_output || !req.body.allTCarr || !req.body.allCorrectSolnArr || !req.body.rating || !req.body.inputFormat || !req.body.outputFormat || !req.body.userid) {
-            console.log(req.body)
             return res.status(400).send('Request body is missing');
         }
         const userAuth = await User.findOne({ userid: req.body.userid });
@@ -23,7 +22,7 @@ app.post('/create', async (req, res) => {
         }
         const newProb = new Problem({ ...req.body, author: userAuth.name });
         newProb.save();
-        res.send(newProb);
+        res.send(newProb._id);
     }
     catch (err) {
         console.log("Failed to create problem");
@@ -52,7 +51,14 @@ app.get('/problemset', async (req, res) => {
         const visibleprobs = allproblems.filter((ele) =>
             (new Date().getTime() > (new Date(ele.availableFrom).getTime() + ele.duration * 60000))
         )
-        res.send(JSON.stringify(visibleprobs));
+        res.send(JSON.stringify(
+            visibleprobs.map(prob => ({
+                title: prob.title,
+                rating: prob.rating,
+                author: prob.author,
+                total_submissions: prob.total_submissions,
+                total_accepted: prob.total_accepted
+        }))));
     } catch (err) {
         console.log("Failed to get problemset");
         res.status(500).send('Internal Server Error');

@@ -34,12 +34,30 @@ const Problems = () => {
     const { currentUser, globalUser } = useUserContext();
     const [console1, setConsole1] = useState('');
     const codeRef = useRef(null);
+
     useEffect(() => {
-        handleLangChoice("cpp")
         axios.get(`${baseURL}/problem/problem/${Pname}`) // Assuming you want to fetch the problem with id 1
             .then(response => {
-                console.log(response.data)
                 setProblem(response.data);
+                if (localStorage.getItem(`OJ-${response.data.title}`)) {
+                    setTimeout(() => {
+                        codeRef.current?.editor?.setValue(localStorage.getItem(`OJ-${response.data.title}`))
+                    }, 500)
+                }
+                else {
+                    setTimeout(() => {
+                        codeRef.current?.editor?.setValue(`#include <bits/stdc++.h>
+    using namespace std;
+
+    int main(){
+
+        cout<<"Hello World";
+        return 0;
+
+    }`)
+                    }, 500)
+
+                }
                 setConsole1(response.data.solved_TC_input);
             })
             .catch(error => console.error('Error fetching problem:', error));
@@ -95,11 +113,10 @@ int main(){
                 return;
             }
             setLoading(true);
-            console.log(currentUser.uid, problem._id, contestName)
+            localStorage.setItem(`OJ-${problem.title}`, codeRef.current.editor.getValue())
             const { data } = await axios.post(`${baseURLsubs}/submission/run`, {
                 lang, code: codeRef.current.editor.getValue(), isSubmit: (isSubmit == 1), userID: currentUser.uid, probID: problem._id, input: console1, contestName: contestName
             });
-            console.log(data)
             if (isSubmit == 1)
                 if (data.isCorrect) {
                     setSuccessMsg("Accepted");
@@ -119,7 +136,6 @@ int main(){
             if (isSubmit == 2)
                 setOutput(error.response.data)
             else setVerdict(error.response.data)
-            console.log("inside error while running code", error.response.data);
         }
         setLoading(false);
     }
@@ -144,7 +160,6 @@ int main(){
     // }
 
     const getallsubmission = async () => {
-        console.log(Pname, currentUser.uid)
         axios.post(`${baseURL}/user/userinfo`, {
             uid: currentUser.uid
         }).then(async (res) => {
@@ -155,7 +170,7 @@ int main(){
             const mysub = data.filter((ele) => ele.userName == res.data.name)
             setMysubmission(mysub)
             setAllsubmission(data);
-            console.log(mysub)
+            // console.log(mysub)
         }).catch((err) => {
             console.log(err)
         })
@@ -187,6 +202,12 @@ int main(){
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
     };
+    const nextline = (value) => {
+        if (!value || value.trim() == '') return null
+        return value?.split('\n').map((item, index) => {
+            return <p key={index} style={{ margin: '0' }}>{item}</p>
+        })
+    }
     useEffect(() => {
         // getmysubmission()
         getallsubmission()
@@ -212,7 +233,7 @@ int main(){
                                     </h2>
                                     <select
                                         className="select-box border border-gray-300 rounded-lg py-1.5 px-4 mb-1 focus:outline-none focus:border-indigo-500"
-                                        onClick={(e) => { handleLangChoice(e.target.value); setLang(e.target.value); }}>
+                                        onClick={(e) => { setLang(e.target.value); }}>
                                         <option value='cpp'>C++</option>
                                         <option value='c'>C</option>
                                         <option value='py'>Python</option>
@@ -229,17 +250,17 @@ int main(){
                                             : <MathExpression expression={ele} />
                                     ))}
                                 </p>
+                                <p><strong>Sample Test Case :</strong><br /> {nextline(problem.solved_TC_input)}</p>
+                                <p><strong>Sample Test Case :</strong><br /> {nextline(problem.solved_TC_output)}</p>
+                                <p><strong>Input Format:</strong><br /> {nextline(problem.inputFormat)}</p>
+                                <p><strong>Output Format:</strong><br /> {nextline(problem.outputFormat)}</p>
                                 <p><strong>Constraints :</strong><br /><MathExpression expression={problem.constraints} />                                </p>
-                                <p><strong>Sample Test Case :</strong><br /> {problem.solved_TC_input}</p>
-                                <p><strong>Sample Test Case :</strong><br /> {problem.solved_TC_output}</p>
-                                <p><strong>Input Format:</strong><br /> {problem.inputFormat}</p>
-                                <p><strong>Output Format:</strong><br /> {problem.outputFormat}</p>
                                 <p><strong>Rating:</strong><br /> {problem.rating}</p>
                                 <p><strong>Author:</strong><br /> {problem.author}</p>
                                 <div className='makerow' style={{ display: 'flex', justifyContent: 'space-evenly' }}>
                                     <p>Submissions: {problem.total_submissions}</p>
                                     <p>Accepted: {problem.total_accepted}</p>
-                                    <p>Accuracy: {((problem.total_accepted / (problem.total_submissions == 0) ? 1 : problem.total_submissions) * 100).toFixed(2)}%</p>
+                                    <p>Accuracy:{problem.total_submissions == 0 ? 0 : (problem.total_accepted / problem.total_submissions * 100).toFixed(2)}%</p>
                                 </div>
                             </div>
                         </TabPanel>
@@ -341,18 +362,14 @@ int main(){
                                 </TabPanel>
                                 <TabPanel id="output">
                                     <div>{loading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '20vh' }}><CircularProgress style={{ margin: 'auto' }} /></div> : <>
-                                        {output.split('\n').map((item, index) => {
-                                            return <p key={index} style={{ margin: '0' }}>{item}</p>
-                                        })}
+                                        {nextline(output)}
                                     </>
                                     }
                                     </div>
                                 </TabPanel>
                                 <TabPanel id="verdict">
                                     {loading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '20vh' }}><CircularProgress style={{ margin: 'auto' }} /></div> : <>
-                                        {verdict.split('\n').map((item, index) => {
-                                            return <p key={index} style={{ margin: '0' }}>{item}</p>
-                                        })}
+                                        {nextline(verdict)}
                                     </>
                                     }
                                 </TabPanel>
@@ -364,10 +381,10 @@ int main(){
                                 <button onClick={() => setIsActive(!isActive)} type="button" style={{ width: '31%' }} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
                                     Console <i className="fa-solid fa-terminal ml-2"></i>
                                 </button>
-                                <button onClick={() => handleSubmit()} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                <button onClick={() => handleSubmit()} type="button" style={{ width: '31%' }} disabled={false} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
                                     {!loading ? <>Run <i className="fa-solid fa-play ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
                                 </button>
-                                <button onClick={handleSubmit2} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                <button onClick={handleSubmit2} type="button" style={{ width: '31%' }} disabled={false} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
                                     {!loading ? <>Submit <i className="fa-solid fa-circle-check ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
                                 </button>
                             </div> : null}

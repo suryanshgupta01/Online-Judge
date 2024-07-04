@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import 'react-tabs/style/react-tabs.css';
 import axios from 'axios';
 import DataTableDemo from '../UI/DataTableDemo';
+import { CircularProgress } from '@mui/material';
 
 const baseURL = import.meta.env.VITE_baseURL;
 
@@ -18,15 +19,13 @@ const ProblemSet = () => {
                     ...row,
                     accuracy: row.total_accepted / row.total_submissions * 100
                 })));
-                console.log(problemset)
+                // console.log(response.data)
                 setLoading(false)
             })
             .catch(error => console.error('Error fetching problem:', error));
     }, []);
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh' }}><CircularProgress style={{ margin: 'auto' }} /></div>
 
     return (
         <div>

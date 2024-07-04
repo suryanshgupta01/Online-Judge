@@ -55,7 +55,6 @@ const Signup = () => {
     useEffect(() => {
         setIsLoading(true)
         getRedirectResult(auth).then(response => {
-            console.log(response)
             if (!response) return
         }).catch(error => {
             console.error(error);

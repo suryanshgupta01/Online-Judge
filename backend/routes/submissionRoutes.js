@@ -87,8 +87,7 @@ app.post('/run', async (req, res) => {
             }
         }
         if (!req.body.lang || !req.body.code || !req.body.probID || !req.body.userID) {
-            console.log(req.body)
-            res.status(400).send('Information missing while running code'); return
+           res.status(400).send('Information missing while running code'); return
         }
         const isSubmit = req.body.isSubmit || false
         const userinfo = await User.findOne({ userid: req.body.userID })
@@ -101,19 +100,19 @@ app.post('/run', async (req, res) => {
         }
 
         if (!isSubmit) {
-            const { filePath, dirCodes } = await createFilepath(lang, code, userinfo.name)
-            const answer = await executeCode(filePath, dirCodes, input, userinfo.name, lang)
+            const { filePath, dirCodes } = await createFilepath(lang, code, userinfo.name,problem.title)
+            const answer = await executeCode(filePath, dirCodes, input, userinfo.name, lang, -1)
             res.send({ answer });
         } else {
-            const { filePath, dirCodes } = await createFilepath(lang, code, userinfo.name)
+            const { filePath, dirCodes } = await createFilepath(lang, code, userinfo.name, problem.title)
             const len = problem.allTCarr.length
             let pass = 0
             for (let i = 0; i < len; i++) {
                 const input = problem.allTCarr[i]
                 const output = problem.allCorrectSolnArr[i]
-                const answer = await executeCode(filePath, dirCodes, input, userinfo.name, lang)
-                console.log(input, output, answer)
-                if (answer.trim() != output.trim()) {
+                const answer = await executeCode(filePath, dirCodes, input, userinfo.name, lang, i)
+
+                if (answer?.trim() != output?.trim()) {
                     problem.total_submissions = problem.total_submissions + 1
                     await problem.save()
                     const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, 'Wrong Answer on TC ' + (pass + 1) + '\nWrong TestCase: \n' + problem.allTCarr[pass] + '\nYour output:\n' + answer + '\nCorrect output:\n' + output)
@@ -133,43 +132,53 @@ app.post('/run', async (req, res) => {
             return res.send({ isCorrect: true });
         }
     } catch (error) {
-        const isSubmit = req.body.isSubmit || false
-        const userinfo = await User.findOne({ userid: req.body.userID })
-        if (!userinfo) {
-            res.status(404).send('unauthorized user');
-        }
-        let err = error.stderr
-        if (err?.includes('_' + userinfo.name + '.')) {
-            err = 'Compilation Error \n' + err
-        } else {
-            err = 'Segmentation fault \n' + err
-        }
-        if (isSubmit) {
-            const lang = req.body.lang;
-            const code = req.body.code;
-            const input = req.body.input;
-            const contestName = req.body?.contestName;
-            let contest = null;
-            if (contestName) {
-                contest = await Contest.findOne({ title: contestName.split('-').join(' ') })
-                if ((new Date(contest?.start_time).getTime() + contest?.duration * 60000) < (new Date().getTime()) || new Date(contest?.start_time).getTime() > new Date().getTime()) {
-                    contest = null
-                    // console.log("contest over or not started")
+        try {
+            const error2 = error?.toString().substring(7)
+            const isSubmit = req.body.isSubmit || false
+            const userinfo = await User.findOne({ userid: req.body.userID })
+            if (!userinfo) {
+                res.status(404).send('unauthorized user');
+            }
+            let err = ""
+            if (error2?.includes('_' + userinfo.name + '.')) {
+                err = 'Compilation Error \n' + error2
+            } else if (error2?.includes('Time Limit Exceeded')) {
+                err = 'Time Limit Exceeded \n' + error2
+            } else if (error2?.includes('Memory Limit Exceeded')) {
+                err = 'Memory Limit Exceeded \n' + error2
+            }
+            else {
+                err = 'Segmentation fault \n Kindly check your code and try again'
+            }
+            if (isSubmit) {
+                const lang = req.body.lang;
+                const code = req.body.code;
+                const input = req.body.input;
+                const contestName = req.body?.contestName;
+                let contest = null;
+                if (contestName) {
+                    contest = await Contest.findOne({ title: contestName.split('-').join(' ') })
+                    if ((new Date(contest?.start_time).getTime() + contest?.duration * 60000) < (new Date().getTime()) || new Date(contest?.start_time).getTime() > new Date().getTime()) {
+                        contest = null
+                        // console.log("contest over or not started")
+                    }
                 }
-            }
-            const problem = await Problem.findById(req.body.probID)
-            if (!problem) {
-                res.status(404).send('problem not found'); return
-            }
+                const problem = await Problem.findById(req.body.probID)
+                if (!problem) {
+                    res.status(404).send('problem not found'); return
+                }
 
-            problem.total_submissions = problem.total_submissions + 1
-            await problem.save()
-            const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, err)
-            if (!contest)
-                userinfo.problems_submitted.push(sub)
-            await userinfo.save()
+                problem.total_submissions = problem.total_submissions + 1
+                await problem.save()
+                const sub = await createSubmission(problem._id, problem.title, contest?._id, userinfo.name, userinfo._id, code, lang, err)
+                if (!contest)
+                    userinfo.problems_submitted.push(sub)
+                await userinfo.save()
+            }
+            return res.status(500).send(err);
+        } catch (err) {
+            console.log("mistake in main catch", err)
         }
-        return res.status(500).send(err);
     }
 });
 

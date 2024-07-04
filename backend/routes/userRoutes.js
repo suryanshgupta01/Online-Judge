@@ -79,7 +79,6 @@ app.put('/changeinfo', async (req, res) => {
 app.post('/deleteuser', async (req, res) => {
     try {
         const id = req.body.ID
-        console.log("in delete user API", id, req.body.ID)
         await User.findByIdAndDelete({ _id: id })
         return res.send("User deleted")
     } catch (err) {

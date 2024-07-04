@@ -24,8 +24,8 @@ const Contests = () => {
         fetch(`${baseURL}/contest/contests`)
             .then(res => res.json())
             .then(data => {
+                // console.log(data)
                 data.forEach(contest => {
-                    console.log(contest.duration)
                     divideintotimeContest(contest)
                 })
             })
@@ -51,7 +51,7 @@ const Contests = () => {
                             <tr>
                                 <th scope="row">{index + 1}</th>
                                 <td>
-                                    <Link to={`/contest/${contest.title.split(' ').join('-')}/live`} className='links'>
+                                    <Link to={`/contest/${contest.title.split(' ').join('-')}`} className='links'>
                                         {contest.title}
                                     </Link>
                                 </td>
@@ -124,10 +124,10 @@ const Contests = () => {
                                 <th scope="row">{index + 1}</th>
                                 <td>{contest.title}</td>
                                 <td>
-                                    {moment(contest.start_time).format('MMMM Do YYYY, h:mm a')}
+                                    {moment(contest.start_time).format('MMMM Do YYYY, h:mm a')} ({moment(contest.start_time).fromNow()})
                                 </td>
                                 <td>
-                                    <Link to={`/contest/${contest.title.split(' ').join('-')}/old`} className='links'>
+                                    <Link to={`/contest/${contest.title.split(' ').join('-')}`} className='links'>
                                         Leaderboard
                                     </Link>
                                 </td>

@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router-dom'
 import Avatar1 from '../UI/Avatar'
 const baseURL = import.meta.env.VITE_baseURL
 function Contest() {
-    const { ID, status } = useParams()
+    const { ID } = useParams()
     const [contest, setContest] = useState({})
     const langMap = {
         'cpp': 'C++',
@@ -17,13 +17,12 @@ function Contest() {
     };
     useEffect(() => {
         axios.post(`${baseURL}/contest/getcontest`, {
-            ID: ID.split('-').join(' '),
-            notLive: status == 'live' ? 0 : 1
+            ID: ID.split('-').join(' ')
         })
             .then(data => {
                 // const sortedprob = data.data.problems.sort(function (a, b) { return a["rating"] - b["rating"] })
                 setContest(data.data)
-                console.log(data.data)
+                // console.log(data.data)
             })
             .catch(err => console.log(err))
     }, [])
@@ -113,6 +112,7 @@ function Contest() {
                             <thead className='table-dark'>
                                 <tr>
                                     <th scope="col">UserName</th>
+                                    <th scope="col">Problem</th>
                                     <th scope="col">Submitted</th>
                                     <th scope="col">Language</th>
                                     <th scope="col">Verdict</th>
@@ -122,6 +122,7 @@ function Contest() {
                                 {contest.submissions?.reverse().map((problem) => (
                                     <tr>
                                         <td >{problem.userName?.substr(0, 20)}</td>
+                                        <td >{problem.problemName?.substr(0, 21)}</td>
                                         <td>{moment(new Date(problem.createdAt)).fromNow()}</td>
                                         <td>{langMap[problem.language]}</td>
                                         <td style={{ backgroundColor: (problem.verdict == 'Accepted\n') ? '#C3E6CB' : '#F5C6CB' }}>{problem.verdict?.split('\n')[0]}</td>

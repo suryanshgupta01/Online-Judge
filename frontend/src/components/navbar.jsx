@@ -24,6 +24,10 @@ function Navbar() {
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [globalUser, setGlobalUser] = React.useState({})
     const baseURL = import.meta.env.VITE_baseURL
+    const baseURLsubs = import.meta.env.VITE_baseURLsubs
+    const [healthAPI, setHealthAPI] = React.useState(false)
+    const [healthCompiler, setHealthCompiler] = React.useState(false)
+    const [dependency, setDependency] = React.useState(0)
     useEffect(() => {
         if (currentUser) {
             axios.post(`${baseURL}/user/userinfo`, {
@@ -33,7 +37,25 @@ function Navbar() {
             })
         }
     }, [currentUser]);
-    console.log(globalUser)
+    // useEffect(() => {
+    //     const fetchHealthStatus = async () => {
+    //         try {
+    //             const { data: data1 } = await axios.get(`${baseURL}/health`);
+    //             if (data1 === 'Server is running')
+    //                 setHealthAPI(true);
+    //             else
+    //                 setDependency(prev => 1 - prev)
+    //             const { data: data2 } = await axios.get(`${baseURLsubs}/health`);
+    //             if (data2 === 'Server is running')
+    //                 setHealthCompiler(true);
+    //             else
+    //                 setDependency(prev => 1 - prev)
+    //         } catch (error) {
+    //             console.error('Error fetching health status:', error);
+    //         }
+    //     };
+    //     fetchHealthStatus();
+    // }, [dependency]);
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
     };
@@ -54,8 +76,9 @@ function Navbar() {
             <div className="container-fluid" style={{ backgroundColor: '#231f20' }}>
                 <div>
                     <Link className="navbar-brand" to='/'>
-                        <img src="/Onine judge pic.png" alt="logo" style={{ height: '4rem', margin: '0rem' }} />
+                        <img src="/Onine judge pic.png" alt="logo" style={{ height: '4rem', margin: '0rem', marginRight: '1rem' }} />
                         {/* Online Judge */}
+                        {/* {!healthAPI ? <span>APIs 🔴</span> : null} {!healthCompiler ? <span>Compiler 🔴</span> : null} {(!healthAPI || !healthCompiler) ? <span>Retrying...</span> : null} */}
                     </Link>
                 </div>
                 <div>
@@ -101,9 +124,7 @@ function Navbar() {
                                     {globalUser ? <Typography textAlign="center"> <Link className='links' to={`/profile/${globalUser.name}`}>Profile</Link>  </Typography> : <></>}
                                 </MenuItem>
                                 <MenuItem onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">
-                                        <Link className='links' onClick={() => logout()}> Logout</Link>
-                                    </Typography>
+                                    <Typography textAlign="center"><Link className='links' onClick={() => logout()}> Logout</Link></Typography>
                                 </MenuItem>
                                 <MenuItem onClick={handleCloseUserMenu}>
                                     <Typography textAlign="center"> <Link className='links' to={`/problemset`}>Problemset</Link> </Typography>

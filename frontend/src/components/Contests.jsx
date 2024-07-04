@@ -25,7 +25,7 @@ const Contests = () => {
             .then(res => res.json())
             .then(data => {
                 // console.log(data)
-                data.forEach(contest => {
+                data.reverse().forEach(contest => {
                     divideintotimeContest(contest)
                 })
             })

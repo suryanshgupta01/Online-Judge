@@ -124,7 +124,7 @@ const Profile = () => {
                             <div style={{ width: '90%' }}>
                                 <h1>{user.name}</h1>
                                 <p><img src="https://img.freepik.com/free-vector/business-success-growth-green-arrow-world-map_1017-45122.jpg?t=st=1719004907~exp=1719008507~hmac=90dc194f84f538887a5da2ccd3502848bc256c7807305ebfcb1ade981f5b2469&w=996"
-                                    width="24px" /> Contest Rating:<strong> {user.contest_rating}</strong> (max. {user.max_contest_rating || 0})</p>
+                                    width="24px" /> Contest Rating:<strong> {parseInt(user.contest_rating || 0)}</strong> (max. {user.max_contest_rating || 0})</p>
                                 <p><img src="https://img.freepik.com/free-vector/3d-cartoon-style-paper-with-green-tick-envelope-icon-open-envelope-with-approved-document-contract-agreement-flat-vector-illustration-paperwork-success-verification-concept_778687-1016.jpg"
                                     width="30px" style={{ backgroundBlendMode: 'color' }} /> {user.email}</p>
                                 <p><img src="https://img.freepik.com/free-vector/website-faq-section-user-help-desk-customer-support-frequently-asked-questions-problem-solution-quiz-game-confused-man-cartoon-character_335657-1602.jpg?t=st=1719003235~exp=1719006835~hmac=4ba23537109a2b490dd8094171407ac21aa1ae27245deece62f9f00c44cc9f6c&w=740"
@@ -226,7 +226,7 @@ const Profile = () => {
                 <TabPanel>
                     <div style={{ maxHeight: '80vh', overflowY: 'auto' }}>
                         <input
-                            style={{ width: '30%', margin: 'auto',marginBottom:'0.5rem' }}
+                            style={{ width: '30%', margin: 'auto', marginBottom: '0.5rem' }}
                             className="form-control me-2" type="search"
                             placeholder="🔍 Search for question" aria-label="Search"
                             onChange={(e) => { changeProblemsubmitted(e.target.value); }}

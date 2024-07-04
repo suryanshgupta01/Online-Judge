@@ -2,12 +2,21 @@ const { exec, execSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 const psTree = require('ps-tree');
+
 const executeCode = async (filepath, dirCodes, inputFile, name, lang, tc) => {
     const fileID = '_' + name
     const dirCodepath = path.join(dirCodes, fileID)
     const outFilepath = path.join(dirCodes, fileID + '.out')
     const exeFilepath = path.join(dirCodes, fileID + '.exe')
-
+    const divide = {
+        "cpp": 2,
+        "py": 4,
+        "c": 2,
+        "java": 2,
+        "php": 1,
+        "rb": 1
+    }
+    const MAX_TIMEOUT = process.env.MAX_TIMEOUT / divide[lang]
     const commands = {
         // "cpp": `g++ ${filepath} -o ${dirCodepath} && cd ${dirCodes} && .\\${fileID}`,
         "cpp": `g++ ${filepath} -o ${dirCodepath} && ${dirCodepath}`,
@@ -62,9 +71,8 @@ const executeCode = async (filepath, dirCodes, inputFile, name, lang, tc) => {
                 if (childProcess) {
                     await killAllChildProcesses(childProcess.pid);
                 }
-                
                 return reject({ stderr: `Time Limit Exceeded on Test case ${tc + 1}` });
-            }, 5000);
+            }, MAX_TIMEOUT);
         });
 
         return Promise.race([timeout, compileCode]).then((val) => {

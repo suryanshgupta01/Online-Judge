@@ -126,7 +126,11 @@ app.post('/getcontest', async (req, res) => {
                     "createdAt":sub.createdAt
                 }
             }),
-            "leaderboard": contest.leaderboard
+            "title": contest.title,
+            "leaderboard": contest.leaderboard,
+            "start_time": contest.start_time,
+            "duration": contest.duration
+
         }));
     }
     catch (err) {

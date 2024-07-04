@@ -66,6 +66,7 @@ const Problems = () => {
     const [successMsg, setSuccessMsg] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const [lang, setLang] = useState('cpp');
+    const [name1, setName] = useState('Yourself')
 
     const handleLangChoice = (lang) => {
         const sampleCode = {
@@ -121,13 +122,13 @@ int main(){
                 if (data.isCorrect) {
                     setSuccessMsg("Accepted");
                     setVerdict("Code accepted")
-                    setMysubmission((prev) => [{ code: codeRef.current.editor.getValue(), lang: lang, verdict: "Accepted\n", createdAt: new Date() }, ...prev])
-                    setAllsubmission((prev) => [{ code: codeRef.current.editor.getValue(), lang: lang, verdict: "Accepted\n", createdAt: new Date() }, ...prev])
+                    setMysubmission((prev) => [{ code: codeRef.current.editor.getValue(), language: lang, userName: name1, verdict: "Accepted\n", createdAt: new Date() }, ...prev])
+                    setAllsubmission((prev) => [{ code: codeRef.current.editor.getValue(), language: lang, userName: name1, verdict: "Accepted\n", createdAt: new Date() }, ...prev])
                 } else {
                     setErrorMsg("Wrong Answer");
                     setVerdict(`Test Case ${data.pass + 1} incorrect.\nWrong Test Case: \n ${data.wrongTC} \nYour Output: \n ${data.Wooutput} \nCorrect Output: \n ${data.Coutput} `);
-                    setMysubmission((prev) => [{ code: codeRef.current.editor.getValue(), lang: lang, verdict: `Test Case ${data.pass + 1} incorrect.\nWrong Test Case: \n ${data.wrongTC} \nYour Output: \n ${data.Wooutput} \nCorrect Output: \n ${data.Coutput} `, createdAt: new Date() }, ...prev])
-                    setAllsubmission((prev) => [{ code: codeRef.current.editor.getValue(), lang: lang, verdict: `Test Case ${data.pass + 1} incorrect.\nWrong Test Case: \n ${data.wrongTC} \nYour Output: \n ${data.Wooutput} \nCorrect Output: \n ${data.Coutput} `, createdAt: new Date() }, ...prev])
+                    setMysubmission((prev) => [{ code: codeRef.current.editor.getValue(), language: lang, userName: name1, verdict: `Test Case ${data.pass + 1} incorrect.\nWrong Test Case: \n ${data.wrongTC} \nYour Output: \n ${data.Wooutput} \nCorrect Output: \n ${data.Coutput} `, createdAt: new Date() }, ...prev])
+                    setAllsubmission((prev) => [{ code: codeRef.current.editor.getValue(), language: lang, userName: name1, verdict: `Test Case ${data.pass + 1} incorrect.\nWrong Test Case: \n ${data.wrongTC} \nYour Output: \n ${data.Wooutput} \nCorrect Output: \n ${data.Coutput} `, createdAt: new Date() }, ...prev])
                 }
             else
                 setOutput(data.answer);
@@ -167,6 +168,7 @@ int main(){
                 problemName: Pname,
                 userID: currentUser.uid
             });
+            setName(res.data.name)
             const mysub = data.filter((ele) => ele.userName == res.data.name)
             setMysubmission(mysub)
             setAllsubmission(data);
@@ -250,10 +252,10 @@ int main(){
                                             : <MathExpression expression={ele} />
                                     ))}
                                 </p>
-                                <p><strong>Sample Test Case :</strong><br /> {nextline(problem.solved_TC_input)}</p>
-                                <p><strong>Sample Test Case :</strong><br /> {nextline(problem.solved_TC_output)}</p>
                                 <p><strong>Input Format:</strong><br /> {nextline(problem.inputFormat)}</p>
                                 <p><strong>Output Format:</strong><br /> {nextline(problem.outputFormat)}</p>
+                                <p><strong>Sample Test Case :</strong><br /> {nextline(problem.solved_TC_input)}</p>
+                                <p><strong>Sample Test Case :</strong><br /> {nextline(problem.solved_TC_output)}</p>
                                 <p><strong>Constraints :</strong><br /><MathExpression expression={problem.constraints} />                                </p>
                                 <p><strong>Rating:</strong><br /> {problem.rating}</p>
                                 <p><strong>Author:</strong><br /> {problem.author}</p>
@@ -381,10 +383,10 @@ int main(){
                                 <button onClick={() => setIsActive(!isActive)} type="button" style={{ width: '31%' }} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
                                     Console <i className="fa-solid fa-terminal ml-2"></i>
                                 </button>
-                                <button onClick={() => handleSubmit()} type="button" style={{ width: '31%' }} disabled={false} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                <button onClick={() => handleSubmit()} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
                                     {!loading ? <>Run <i className="fa-solid fa-play ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
                                 </button>
-                                <button onClick={handleSubmit2} type="button" style={{ width: '31%' }} disabled={false} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                <button onClick={handleSubmit2} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
                                     {!loading ? <>Submit <i className="fa-solid fa-circle-check ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
                                 </button>
                             </div> : null}

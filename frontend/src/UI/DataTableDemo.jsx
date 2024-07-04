@@ -298,7 +298,7 @@ export default function DataTableDemo({ problems }) {
                                         ><b>{row.title}</b>
                                         </TableCell>
                                         <TableCell align="right">{row.rating}</TableCell>
-                                        <TableCell align="right">{parseFloat(row.accuracy).toFixed(2)}%</TableCell>
+                                        <TableCell align="right">{!isNaN(row.accuracy) ? parseFloat(row.accuracy).toFixed(2) : 0}%</TableCell>
                                         <TableCell align="right">{row.total_accepted}</TableCell>
                                     </TableRow>
                                 );

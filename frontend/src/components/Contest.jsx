@@ -22,7 +22,6 @@ function Contest() {
             .then(data => {
                 // const sortedprob = data.data.problems.sort(function (a, b) { return a["rating"] - b["rating"] })
                 setContest(data.data)
-                // console.log(data.data)
             })
             .catch(err => console.log(err))
     }, [])
@@ -49,7 +48,7 @@ function Contest() {
     }, []);
     if (!contest) return <h1>Contest not found</h1>
     const timeremain = Math.floor((new Date(contest.start_time).getTime() + contest.duration * 60000 - new Date().getTime()) / 1000)
-    return (
+   return (
         <div>
             <div className='makerow' style={{ justifyContent: 'space-between', paddingLeft: '14rem', paddingRight: '14rem', marginTop: '0.5rem' }}>
 
@@ -96,7 +95,7 @@ function Contest() {
                                                     {question.rating}
                                                 </td>
                                                 <td>
-                                                    {parseFloat(question.total_accepted / question.total_submissions * 100).toFixed(2)}%
+                                                    {question.total_submissions != 0 ? parseFloat(question.total_accepted / question.total_submissions * 100).toFixed(2) : 0}%
                                                 </td>
                                                 <td>
                                                     {question.total_accepted}

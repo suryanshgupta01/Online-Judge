@@ -10,14 +10,17 @@ const contestRoutes = require('./routes/contestRoutes')
 const rateLimit = require('express-rate-limit')
 const PORT = process.env.PORT || 4000;
 const cors = require('cors');
+
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(express.json())
+
 const limit=rateLimit({
     max: 1000,
     windowMs: 60 * 60 * 1000, // 1 hour
     message: 'Too many requests from this IP, please try again after an hour' 
 })
+
 app.get('/health', async (req, res) => {
     res.send('Server is running');
 });

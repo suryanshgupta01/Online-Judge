@@ -12,6 +12,7 @@ const clearFolder = require('./clearFolder')
 const path = require('path')
 const cron = require('node-cron');
 
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(express.json())

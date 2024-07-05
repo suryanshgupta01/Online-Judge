@@ -104,8 +104,8 @@ const Profile = () => {
         setIsLoading(false);
     }, [name1]);
 
-    if (isLoading)
-        return <div>Loading...</div>;
+    if (isLoading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh' }}><CircularProgress style={{ margin: 'auto', color: 'green' }} /></div>
+
     return (
         <div>
 

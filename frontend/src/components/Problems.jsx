@@ -20,7 +20,8 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const MathExpression = ({ expression }) => {
     const html = katex.renderToString(expression, {
-        throwOnError: false
+        throwOnError: false,
+        space: true,
     });
     return <span dangerouslySetInnerHTML={{ __html: html }} />;
 };
@@ -214,9 +215,8 @@ int main(){
         // getmysubmission()
         getallsubmission()
     }, []);
-    if (!problem) {
-        return <div>Loading...</div>;
-    }
+    if (!problem) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh' }}><CircularProgress style={{ margin: 'auto' }} /></div>
+
     return (
         <>
             <div className={!isSmallScreen ? 'makerow' : 'makecol'}>
@@ -256,7 +256,7 @@ int main(){
                                 <p><strong>Output Format:</strong><br /> {nextline(problem.outputFormat)}</p>
                                 <p><strong>Sample Test Case :</strong><br /> {nextline(problem.solved_TC_input)}</p>
                                 <p><strong>Sample Test Case :</strong><br /> {nextline(problem.solved_TC_output)}</p>
-                                <p><strong>Constraints :</strong><br /><MathExpression expression={problem.constraints} />                                </p>
+                                <p><strong>Constraints :</strong><br />{problem.constraints.split('\n').map((ele) => ele.trim() ? <li><MathExpression expression={ele} /></li> : null)}                             </p>
                                 <p><strong>Rating:</strong><br /> {problem.rating}</p>
                                 <p><strong>Author:</strong><br /> {problem.author}</p>
                                 <div className='makerow' style={{ display: 'flex', justifyContent: 'space-evenly' }}>

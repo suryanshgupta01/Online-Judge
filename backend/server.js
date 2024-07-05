@@ -14,7 +14,7 @@ const cors = require('cors');
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(express.json())
-
+app.set('trust proxy', 1);
 const limit=rateLimit({
     max: 1000,
     windowMs: 60 * 60 * 1000, // 1 hour

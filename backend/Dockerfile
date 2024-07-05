@@ -13,7 +13,12 @@ RUN apk add --update python3
 
 # Install g++
 # RUN apk add --update g++
-RUN apk update && apk add --no-cache g++
+# RUN apk update && apk add --no-cache g++
+<<<<<<< HEAD
+
+=======
+>>>>>>> 3142840d1cfdc6a5062438f40700fbbeba9feb44
+RUN apt-get update && apt-get install -y gcc build-essential
 
 # Install php
 RUN apk update && apk add --no-cache php

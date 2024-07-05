@@ -15,7 +15,7 @@ RUN apk add --update python3
 # RUN apk add --update g++
 RUN apk update && apk add --no-cache g++
 
-RUN apt-get update && apt-get install -y gcc build-essential
+# RUN apt-get update && apt-get install -y gcc build-essential
 
 # Install php
 RUN apk update && apk add --no-cache php

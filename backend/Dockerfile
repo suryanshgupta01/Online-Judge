@@ -13,7 +13,7 @@ RUN apk add --update python3
 
 # Install g++
 # RUN apk add --update g++
-# RUN apk update && apk add --no-cache g++
+RUN apk update && apk add --no-cache g++
 
 RUN apt-get update && apt-get install -y gcc build-essential
 
@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y gcc build-essential
 RUN apk update && apk add --no-cache php
 
 # Install Java
-# RUN apk add --update openjdk11
+RUN apk add --update openjdk11
 RUN apk add --update openjdk11-jdk
 
 # Install Rust

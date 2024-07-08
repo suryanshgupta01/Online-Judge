@@ -16,6 +16,11 @@ const executeCode = async (filepath, dirCodes, inputFile, name, lang, tc) => {
         "php": 1,
         "rb": 1
     }
+    const matches = inputFile.matchAll(/(?<!\d)(\d+)(?!\d)/g);
+    let inputwithnextline = ""
+    for (const match of matches) {
+        inputwithnextline += (match[1] + "\n");
+    }
     const MAX_TIMEOUT = process.env.MAX_TIMEOUT / divide[lang]
     const commands = {
         // "cpp": `g++ ${filepath} -o ${dirCodepath} && cd ${dirCodes} && .\\${fileID}`,
@@ -44,7 +49,7 @@ const executeCode = async (filepath, dirCodes, inputFile, name, lang, tc) => {
                         resolve(stdout);
                     }
                 })
-            childProcess.stdin.write(inputFile);
+            childProcess.stdin.write(inputwithnextline);
             childProcess.stdin.end();
 
         });

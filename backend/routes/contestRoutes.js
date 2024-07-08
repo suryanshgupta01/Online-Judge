@@ -107,6 +107,7 @@ app.get('/contests', async (req, res) => {
 app.post('/getcontest', async (req, res) => {
     try {
         const contest = await Contest.findOne({ title: req.body.ID }).populate(['problems', 'submissions']);
+        if(!contest)res.status(404).send("No contest found")
         res.send(JSON.stringify({
             "problems": contest.problems.map((p) => {
                 return {

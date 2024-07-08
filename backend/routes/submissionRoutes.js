@@ -87,7 +87,7 @@ app.post('/run', async (req, res) => {
             }
         }
         if (!req.body.lang || !req.body.code || !req.body.probID || !req.body.userID) {
-           res.status(400).send('Information missing while running code'); return
+            res.status(400).send('Information missing while running code'); return
         }
         const isSubmit = req.body.isSubmit || false
         const userinfo = await User.findOne({ userid: req.body.userID })
@@ -100,7 +100,7 @@ app.post('/run', async (req, res) => {
         }
 
         if (!isSubmit) {
-            const { filePath, dirCodes } = await createFilepath(lang, code, userinfo.name,problem.title)
+            const { filePath, dirCodes } = await createFilepath(lang, code, userinfo.name, problem.title)
             const answer = await executeCode(filePath, dirCodes, input, userinfo.name, lang, -1)
             res.send({ answer });
         } else {
@@ -148,8 +148,9 @@ app.post('/run', async (req, res) => {
                 err = 'Memory Limit Exceeded \n' + error2
             }
             else {
-                err = 'Segmentation fault \n Kindly check your code and try again'
+                err = 'Segmentation fault \n' + error2
             }
+            console.log(error2)
             if (isSubmit) {
                 const lang = req.body.lang;
                 const code = req.body.code;

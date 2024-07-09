@@ -1,6 +1,6 @@
 # Online Judge Project
-Live link - https://suryansh-online-judge.netlify.app/profile/Suryansh4066
-Video Demo - https://www.loom.com/share/1d0c2feddde64adb8b7089a57481afb7
+- Live link - https://suryansh-online-judge.netlify.app/profile/Suryansh4066 
+- Video Demo - https://www.loom.com/share/1d0c2feddde64adb8b7089a57481afb7
 
 ## Introduction
 Hi, I'm Suryansh Gupta, a final year BTech graduate from NSUT Delhi with a special interest in software development and core website functionalities.

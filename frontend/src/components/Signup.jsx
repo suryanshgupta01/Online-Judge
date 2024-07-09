@@ -27,7 +27,7 @@ const baseURL = import.meta.env.VITE_baseURL
 const Signup = () => {
     const { currentUser, login, signup, logout, handleGoogle, handleGithub, handleMicrosoft, handleTwitter, handleFacebook } = useUserContext()
     const [name1, setName1] = useState('')
-    const [email, setEmail] = useState(localStorage.getItem('email')||'')
+    const [email, setEmail] = useState(localStorage.getItem('email') || '')
     const navigate = useNavigate()
     const [password, setPassword] = useState('')
     const [successmessage, setSuccessMessage] = useState('')
@@ -40,6 +40,10 @@ const Signup = () => {
         try {
             setErrorMessage('')
             localStorage.setItem('email', email)
+            if (password.trim().length < 6) {
+                setErrorMessage("Password should be at least 6 characters long")
+                return
+            }
             await signup(name1, email, password)
             setSuccessMessage("User created successfully")
             setTimeout(() => {
@@ -93,10 +97,10 @@ const Signup = () => {
                         Sign up
                     </Typography>
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-                        {successmessage && <Alert variant="filled" severity="success">
+                        {successmessage && <Alert variant="filled" severity="success" style={{marginBottom:'2rem'}}>
                             {successmessage}
                         </Alert>}
-                        {errormessage && <Alert variant="filled" severity="error">
+                        {errormessage && <Alert variant="filled" severity="error" style={{ marginBottom: '2rem' }}>
                             {errormessage}
                         </Alert>}
                         <Grid container spacing={2}>

@@ -47,8 +47,9 @@ const Problems = () => {
                 }
                 else {
                     setTimeout(() => {
-                        codeRef.current?.editor?.setValue(`#include <bits/stdc++.h>
-    using namespace std;
+                        codeRef.current?.editor?.setValue(`#include <iostream>
+//avoid using universal imports for faster computation
+using namespace std;
 
     int main(){
 
@@ -71,7 +72,8 @@ const Problems = () => {
 
     const handleLangChoice = (lang) => {
         const sampleCode = {
-            "cpp": `#include <bits/stdc++.h>
+            "cpp": `#include <iostream>
+//avoid using universal imports for faster computation
 using namespace std;
 
     int main(){
@@ -110,7 +112,7 @@ int main(){
             setIsActive(true);
         // verdictRef.current.click();
         try {
-            if (!codeRef.current.editor.getValue() || !console1) {
+            if (!codeRef.current.editor.getValue() || (isSubmit == 2 && !console1)) {
                 setErrorMsg("Code or console is empty");
                 return;
             }
@@ -215,11 +217,25 @@ int main(){
         // getmysubmission()
         getallsubmission()
     }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.ctrlKey && event.key === 'Enter') {
+                event.preventDefault();
+                if (!loading) { handleSubmit2(); }
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+    const [hover, setHover] = useState(false);
     if (!problem) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh' }}><CircularProgress style={{ margin: 'auto' }} /></div>
 
     return (
         <>
-            <div className={!isSmallScreen ? 'makerow' : 'makecol'}>
+            <div className={!isSmallScreen ? 'makerow' : 'makecol'} >
                 <div style={{ width: width }}>
                     <Tabs style={{ textAlign: 'left' }} >
                         <TabList>
@@ -229,20 +245,23 @@ int main(){
                         </TabList>
                         <TabPanel >
                             <div style={{ padding: '0.7rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <h2>{problem.title}
                                         {/* <i className="fa-solid fa-code"></i> */}
                                     </h2>
-                                    <select
-                                        className="select-box border border-gray-300 rounded-lg py-1.5 px-4 mb-1 focus:outline-none focus:border-indigo-500"
-                                        onClick={(e) => { setLang(e.target.value); }}>
-                                        <option value='cpp'>C++</option>
-                                        <option value='c'>C</option>
-                                        <option value='py'>Python</option>
-                                        <option value='java'>Java</option>
-                                        <option value='php'>PHP</option>
-                                        <option value='rb'>Ruby</option>
-                                    </select>
+                                    <div className='makerow'>
+                                        <Avatar1 info={{ keyboard: 'true' }} />
+                                        <select
+                                            className=" container select-box border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:border-indigo-500"
+                                            onClick={(e) => { setLang(e.target.value); }}>
+                                            <option value='cpp'>C++</option>
+                                            <option value='c'>C</option>
+                                            <option value='py'>Python</option>
+                                            <option value='java'>Java</option>
+                                            <option value='php'>PHP</option>
+                                            <option value='rb'>Ruby</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <br />
                                 <p><strong>Problem Statement :<br /></strong>
@@ -357,12 +376,12 @@ int main(){
                                     <Tab >Output</Tab>
                                     <Tab >Verdict</Tab>
                                 </TabList>
-                                <TabPanel id="console1">
-                                    <textarea rows={4} style={{ width: '100%' }} value={console1} onChange={(e) => setConsole1(e.target.value)}>
+                                <TabPanel >
+                                    <textarea rows={4} style={{ width: '100%' }} id="console1" value={console1} onChange={(e) => setConsole1(e.target.value)}>
                                         {console1}
                                     </textarea>
                                 </TabPanel>
-                                <TabPanel id="output">
+                                <TabPanel>
                                     <div>{loading ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '20vh' }}><CircularProgress style={{ margin: 'auto' }} /></div> : <>
                                         {nextline(output)}
                                     </>
@@ -379,14 +398,18 @@ int main(){
 
                         </div>
                         {currentUser ?
-                            <div className={`collapsible ${isActive ? 'active' : ''} `} >
-                                <button onClick={() => setIsActive(!isActive)} type="button" style={{ width: '31%' }} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                            <div className={`collapsible ${isActive ? 'active' : ''} `} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
+                                <button onClick={() => setIsActive(!isActive)} type="button" style={{
+                                    width: '31%',
+                                    backgroundColor: hover ? '#9a9a9a' : 'black', color: 'white'
+                                }} onMouseEnter={() => setHover(true)}
+                                    onMouseLeave={() => setHover(false)} >
                                     Console <i className="fa-solid fa-terminal ml-2"></i>
                                 </button>
-                                <button onClick={() => handleSubmit()} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                <button onClick={() => handleSubmit()} type="button" style={{ width: '31%', backgroundColor: '#026ccc', color: 'white' }} disabled={loading}>
                                     {!loading ? <>Run <i className="fa-solid fa-play ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
                                 </button>
-                                <button onClick={handleSubmit2} type="button" style={{ width: '31%' }} disabled={loading} className="text-center inline-flex items-center text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:outline-none font-medium rounded-lg text-sm px-4 py-2.5 me-2 mb-2">
+                                <button onClick={handleSubmit2} type="button" style={{ width: '31%', backgroundColor: '#0dd354', color: 'white' }} disabled={loading} >
                                     {!loading ? <>Submit <i className="fa-solid fa-circle-check ml-2"></i></> : <FontAwesomeIcon icon={faSpinner} spin className="ml-2" />}
                                 </button>
                             </div> : null}

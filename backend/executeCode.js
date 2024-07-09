@@ -9,12 +9,12 @@ const executeCode = async (filepath, dirCodes, inputFile, name, lang, tc) => {
     const outFilepath = path.join(dirCodes, fileID + '.out')
     const exeFilepath = path.join(dirCodes, fileID + '.exe')
     const divide = {
-        "cpp": 2,
-        "py": 4,
-        "c": 2,
+        "cpp": 3,
+        "py": 5,
+        "c": 3,
         "java": 2,
-        "php": 1,
-        "rb": 1
+        "php": 2.5,
+        "rb": 2.5
     }
     const matches = inputFile.matchAll(/(?<!\d)(\d+)(?!\d)/g);
     let inputwithnextline = ""

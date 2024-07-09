@@ -140,7 +140,7 @@ app.post('/run', async (req, res) => {
                 res.status(404).send('unauthorized user');
             }
             let err = ""
-            if (error2?.includes('_' + userinfo.name + '.')) {
+            if (error2?.includes('_' + userinfo.name + '-')) {
                 err = 'Compilation Error \n' + error2
             } else if (error2?.includes('Time Limit Exceeded')) {
                 err = 'Time Limit Exceeded \n' + error2

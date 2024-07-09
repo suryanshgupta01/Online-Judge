@@ -49,10 +49,10 @@ function ForgotPassword() {
                             Reset Password
                         </Typography>
                         <Box component="form" noValidate sx={{ mt: 1 }}>
-                            {successmessage && <Alert variant="filled" severity="success">
+                            {successmessage && <Alert variant="filled" severity="success" style={{ marginBottom: '2rem' }}>
                                 {successmessage}
                             </Alert>}
-                            {errormessage && <Alert variant="filled" severity="error">
+                            {errormessage && <Alert variant="filled" severity="error" style={{ marginBottom: '2rem' }}>
                                 {errormessage}
                             </Alert>}
                             <TextField

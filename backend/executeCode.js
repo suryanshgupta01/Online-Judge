@@ -16,11 +16,7 @@ const executeCode = async (filepath, dirCodes, inputFile, name, lang, tc) => {
         "php": 2.5,
         "rb": 2.5
     }
-    const matches = inputFile.matchAll(/(?<!\d)(\d+)(?!\d)/g);
-    let inputwithnextline = ""
-    for (const match of matches) {
-        inputwithnextline += (match[1] + "\n");
-    }
+    const inputwithnextline = inputFile.split('\n').join(' ').split(' ').join('\n')
     const MAX_TIMEOUT = process.env.MAX_TIMEOUT / divide[lang]
     const commands = {
         // "cpp": `g++ ${filepath} -o ${dirCodepath} && cd ${dirCodes} && .\\${fileID}`,

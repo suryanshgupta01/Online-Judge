@@ -154,7 +154,7 @@ function Admin() {
                     required
                     fullWidth
                     id="duration"
-                    label="Duration (in hours)"
+                    label="Duration (in mins)"
                     name="duration"
                     type="number"
                     value={duration}
